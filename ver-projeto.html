@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Projeto - Polymusic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: "#eef6ff",
+                            100: "#d9ebff",
+                            200: "#bcdcff",
+                            300: "#8fc4ff",
+                            400: "#5da3ff",
+                            500: "#357dff",
+                            600: "#215df5",
+                            700: "#1d4ae1",
+                            800: "#203fb6",
+                            900: "#22398f"
+                        }
+                    },
+                    boxShadow: {
+                        soft: "0 12px 40px rgba(15, 23, 42, 0.08)"
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        #print-ficha-container {
+            display: none;
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
+
+            html, body {
+                background: #fff !important;
+                color: #111827 !important;
+                height: auto !important;
+            }
+
+            body {
+                display: block !important;
+                font-family: Arial, Helvetica, sans-serif !important;
+            }
+
+            #sidebar-container,
+            .no-print,
+            #conteudo-projeto {
+                display: none !important;
+            }
+
+            main,
+            .print-shell {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+
+            #print-ficha-container {
+                display: block !important;
+            }
+
+            .print-doc {
+                color: #111827;
+                font-size: 11px;
+                line-height: 1.45;
+            }
+
+            .print-header {
+                border-bottom: 2px solid #111827;
+                padding-bottom: 10px;
+                margin-bottom: 14px;
+            }
+
+            .print-brand {
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.12em;
+                color: #475569;
+                margin-bottom: 4px;
+            }
+
+            .print-title {
+                font-size: 22px;
+                font-weight: 700;
+                margin: 0;
+                line-height: 1.2;
+            }
+
+            .print-subtitle {
+                font-size: 12px;
+                color: #475569;
+                margin-top: 3px;
+            }
+
+            .print-section {
+                margin-top: 14px;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .print-section-title {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                border-bottom: 1px solid #cbd5e1;
+                padding-bottom: 4px;
+                margin-bottom: 8px;
+            }
+
+            .print-grid-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px 16px;
+            }
+
+            .print-grid-3 {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 8px 16px;
+            }
+
+            .print-field {
+                margin-bottom: 4px;
+            }
+
+            .print-label {
+                display: block;
+                font-size: 9px;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: #64748b;
+                margin-bottom: 2px;
+            }
+
+            .print-value {
+                font-size: 11px;
+                color: #111827;
+                word-break: break-word;
+            }
+
+            .print-faixa {
+                border: 1px solid #cbd5e1;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .print-faixa-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 12px;
+                margin-bottom: 8px;
+            }
+
+            .print-faixa-numero {
+                font-weight: 700;
+                font-size: 12px;
+            }
+
+            .print-faixa-titulo {
+                font-size: 14px;
+                font-weight: 700;
+                line-height: 1.25;
+            }
+
+            .print-mini {
+                font-size: 10px;
+                color: #475569;
+            }
+
+            .print-letra-bloco {
+                margin-top: 8px;
+                padding-top: 8px;
+                border-top: 1px dashed #cbd5e1;
+            }
+
+            .print-letra-texto {
+                white-space: pre-wrap;
+                font-size: 10px;
+                line-height: 1.45;
+                color: #1e293b;
+            }
+
+            .print-with-lyrics-hidden .print-letra-bloco {
+                display: none !important;
+            }
+
+            a {
+                color: #111827 !important;
+                text-decoration: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 flex h-screen text-slate-800">
+
+    <div id="sidebar-container"></div>
+
+    <main class="flex-1 overflow-y-auto">
+        <div class="print-shell max-w-7xl mx-auto px-6 lg:px-8 py-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8 no-print">
+                <div>
+                    <p class="text-sm font-medium text-brand-700 mb-1">Polymusic • Projetos</p>
+                    <h1 class="text-3xl lg:text-4xl font-bold text-slate-900">Ficha Técnica do Projeto</h1>
+                    <p class="text-slate-500 mt-2">Visualização completa das informações do lançamento, status e participantes.</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <button
+                        id="btn-exportar-csv"
+                        type="button"
+                        class="inline-flex items-center justify-center rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition"
+                    >
+                        Exportar CSV
+                    </button>
+
+                    <button
+                        id="btn-imprimir"
+                        type="button"
+                        class="inline-flex items-center justify-center rounded-xl border border-brand-300 bg-brand-50 px-4 py-2.5 text-sm font-semibold text-brand-700 hover:bg-brand-100 transition"
+                    >
+                        Imprimir Ficha
+                    </button>
+
+                    <a href="gerenciar-projetos.html"
+                       class="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
+                        ← Voltar para Projetos
+                    </a>
+                </div>
+            </div>
+
+            <div id="conteudo-projeto" class="space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-soft p-8">
+                    <p class="text-slate-400">Carregando...</p>
+                </div>
+            </div>
+
+            <div id="print-ficha-container" class="hidden"></div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { carregarSidebar } from './js/sidebar.js';
+        import { supabase } from './js/supabase-config.js';
+
+        carregarSidebar();
+
+        let projetoAtual = null;
+        let faixasAtuais = [];
+        let participantesAtuais = [];
+
+        configurarAcoesTopo();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const projetoId = urlParams.get('id');
+
+        if (!projetoId) {
+            document.getElementById('conteudo-projeto').innerHTML = `
+                <div class="bg-white border border-red-200 rounded-2xl shadow-soft p-8">
+                    <p class="text-red-600 font-medium">ID do projeto não informado.</p>
+                </div>
+            `;
+        } else {
+            carregarProjeto(projetoId);
+        }
+
+        async function carregarProjeto(id) {
+            try {
+                const { data: projeto, error: erroProjeto } = await supabase
+                    .from('projetos')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (erroProjeto) throw erroProjeto;
+
+                const { data: faixas, error: erroFaixas } = await supabase
+                    .from('faixas')
+                    .select('*')
+                    .eq('projeto_id', id)
+                    .order('numero_faixa');
+
+                if (erroFaixas) throw erroFaixas;
+
+                const { data: participantes, error: erroPart } = await supabase
+                    .from('projeto_participantes')
+                    .select('*, pessoas(*)')
+                    .eq('projeto_id', id);
+
+                if (erroPart) throw erroPart;
+
+                projetoAtual = projeto;
+                faixasAtuais = faixas || [];
+                participantesAtuais = participantes || [];
+
+                renderizarFicha(projetoAtual, faixasAtuais, participantesAtuais);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('conteudo-projeto').innerHTML = `
+                    <div class="bg-white border border-red-200 rounded-2xl shadow-soft p-8">
+                        <p class="text-red-600 font-medium">Erro ao carregar: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderizarFicha(projeto, faixas, participantes) {
+            const container = document.getElementById('conteudo-projeto');
+
+            const participantesPorFaixa = {};
+            const participantesGlobais = { produtores: [], musicos: [] };
+
+            participantes.forEach(p => {
+                const papel = p.papel;
+
+                if (p.faixa_id) {
+                    if (!participantesPorFaixa[p.faixa_id]) {
+                        participantesPorFaixa[p.faixa_id] = { compositores: [], interpretes: [] };
+                    }
+
+                    if (papel === 'AUTOR') participantesPorFaixa[p.faixa_id].compositores.push(p.pessoas);
+                    if (papel === 'INTERPRETE') participantesPorFaixa[p.faixa_id].interpretes.push(p.pessoas);
+                } else {
+                    if (papel === 'PRODUTOR_MUSICAL') {
+                        participantesGlobais.produtores.push({ ...p.pessoas, instrumento: p.instrumento });
+                    }
+                    if (papel === 'MUSICO') {
+                        participantesGlobais.musicos.push({ ...p.pessoas, instrumento: p.instrumento });
+                    }
+                }
+            });
+
+            const formatarData = (data) => {
+                if (!data) return '—';
+                return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
+            };
+
+            const escaparHtml = (texto) => {
+                if (!texto) return '';
+                return String(texto)
+                    .replaceAll('&', '&amp;')
+                    .replaceAll('<', '&lt;')
+                    .replaceAll('>', '&gt;')
+                    .replaceAll('"', '&quot;')
+                    .replaceAll("'", '&#039;');
+            };
+
+            const nl2br = (texto) => escaparHtml(texto).replace(/\n/g, '<br>');
+
+            const calcularDias = (dataInicio, dataFim = null) => {
+                if (!dataInicio) return null;
+
+                const inicio = new Date(dataInicio + 'T00:00:00');
+                const fim = dataFim ? new Date(dataFim + 'T00:00:00') : new Date();
+                const diffMs = fim - inicio;
+                return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            };
+
+            const badgeStatus = (status) => {
+                const classes = {
+                    'AINDA_NAO_TEM': 'bg-slate-100 text-slate-700 border border-slate-200',
+                    'EM_ANDAMENTO': 'bg-amber-100 text-amber-800 border border-amber-200',
+                    'CONCLUIDO': 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                };
+
+                const textos = {
+                    'AINDA_NAO_TEM': 'Ainda não tem',
+                    'EM_ANDAMENTO': 'Em andamento',
+                    'CONCLUIDO': 'Concluído'
+                };
+
+                return `
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${classes[status] || 'bg-slate-100 text-slate-700 border border-slate-200'}">
+                        ${textos[status] || status || '—'}
+                    </span>
+                `;
+            };
+
+            const resumoStatus = (status, inicio, conclusao) => {
+                if (status === 'EM_ANDAMENTO' && inicio) {
+                    const dias = calcularDias(inicio);
+                    return `Em andamento há ${dias} dia${dias === 1 ? '' : 's'}`;
+                }
+
+                if (status === 'CONCLUIDO' && inicio && conclusao) {
+                    const dias = calcularDias(inicio, conclusao);
+                    return `Concluído em ${dias} dia${dias === 1 ? '' : 's'}`;
+                }
+
+                if (status === 'AINDA_NAO_TEM') {
+                    return 'Sem atividade iniciada';
+                }
+
+                return '—';
+            };
+
+            const itemInfo = (label, valor) => `
+                <div class="bg-slate-50 rounded-xl border border-slate-200 px-4 py-3">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">${label}</p>
+                    <p class="text-sm md:text-[15px] font-medium text-slate-800 mt-1 break-words">${valor || '—'}</p>
+                </div>
+            `;
+
+            const blocoStatus = (titulo, status, inicio, conclusao) => `
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-6">
+                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">${titulo}</h3>
+                            <p class="text-sm text-slate-500 mt-1">${resumoStatus(status, inicio, conclusao)}</p>
+                        </div>
+                        <div>
+                            ${badgeStatus(status)}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                        ${itemInfo('Iniciado em', formatarData(inicio))}
+                        ${itemInfo('Concluído em', formatarData(conclusao))}
+                    </div>
+                </div>
+            `;
+
+            const produtoresTexto = participantesGlobais.produtores.length
+                ? participantesGlobais.produtores
+                    .map(p => escaparHtml(p.nome_artistico || p.nome_completo || '—'))
+                    .join(', ')
+                : '—';
+
+            const musicosTexto = participantesGlobais.musicos.length
+                ? participantesGlobais.musicos
+                    .map(m => {
+                        const nome = escaparHtml(m.nome_artistico || m.nome_completo || '—');
+                        const inst = m.instrumento ? ` (${escaparHtml(m.instrumento)})` : '';
+                        return `${nome}${inst}`;
+                    })
+                    .join(', ')
+                : '—';
+
+            const html = `
+                <section class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl shadow-soft overflow-hidden">
+                    <div class="px-8 py-8 lg:px-10 lg:py-10">
+                        <div class="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-8">
+                            <div class="min-w-0">
+                                <div class="flex flex-wrap items-center gap-3 mb-4">
+                                    <span class="inline-flex items-center rounded-full bg-white/10 border border-white/10 px-3 py-1 text-xs font-semibold text-slate-200">
+                                        Projeto Musical
+                                    </span>
+                                    ${projeto.is_prioridade ? `
+                                        <span class="inline-flex items-center rounded-full bg-red-500/15 border border-red-400/20 px-3 py-1 text-xs font-semibold text-red-200">
+                                            Prioridade
+                                        </span>
+                                    ` : ''}
+                                </div>
+
+                                <h2 class="text-3xl lg:text-4xl font-bold text-white leading-tight">
+                                    ${escaparHtml(projeto.nome_projeto || 'Projeto sem nome')}
+                                </h2>
+
+                                <p class="text-slate-300 text-lg mt-3">
+                                    ${escaparHtml(projeto.titulo || 'Sem título principal cadastrado')}
+                                </p>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-8">
+                                    <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-4">
+                                        <p class="text-xs uppercase tracking-wide text-slate-400">Formato</p>
+                                        <p class="text-white font-semibold mt-1">${escaparHtml(projeto.formato || '—')}</p>
+                                    </div>
+                                    <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-4">
+                                        <p class="text-xs uppercase tracking-wide text-slate-400">Lançamento</p>
+                                        <p class="text-white font-semibold mt-1">${formatarData(projeto.data_lancamento)}</p>
+                                    </div>
+                                    <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-4">
+                                        <p class="text-xs uppercase tracking-wide text-slate-400">Label</p>
+                                        <p class="text-white font-semibold mt-1">${escaparHtml(projeto.label || '—')}</p>
+                                    </div>
+                                    <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-4">
+                                        <p class="text-xs uppercase tracking-wide text-slate-400">Faixas</p>
+                                        <p class="text-white font-semibold mt-1">${faixas.length}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="w-full xl:max-w-sm grid gap-4">
+                                <div class="bg-white rounded-2xl border border-slate-200 p-5">
+                                    <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Status Geral</p>
+                                    <div class="mt-3">${badgeStatus(projeto.status_geral)}</div>
+                                    <p class="text-sm text-slate-600 mt-3">${resumoStatus(projeto.status_geral, projeto.status_geral_data_inicio, projeto.status_geral_data_conclusao)}</p>
+                                </div>
+
+                                <div class="bg-white rounded-2xl border border-slate-200 p-5">
+                                    <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Arte de Capa</p>
+                                    <div class="mt-3">${badgeStatus(projeto.capa_status)}</div>
+                                    <p class="text-sm text-slate-600 mt-3">${resumoStatus(projeto.capa_status, projeto.capa_data_inicio, projeto.capa_data_conclusao)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-soft p-6">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3 class="text-xl font-bold text-slate-900">Informações Gerais</h3>
+                            <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Ficha Base</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${itemInfo('Nome do Projeto', escaparHtml(projeto.nome_projeto || '—'))}
+                            ${itemInfo('Título Principal', escaparHtml(projeto.titulo || '—'))}
+                            ${itemInfo('Formato', escaparHtml(projeto.formato || '—'))}
+                            ${itemInfo('Gênero / Subgênero', escaparHtml(projeto.genero_subgenero || '—'))}
+                            ${itemInfo('Label', escaparHtml(projeto.label || '—'))}
+                            ${itemInfo('Data de Lançamento', formatarData(projeto.data_lancamento))}
+                            ${itemInfo('Spotify ID', escaparHtml(projeto.spotify_id || '—'))}
+                            ${itemInfo('Apple Music ID', escaparHtml(projeto.apple_music_id || '—'))}
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-6">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3 class="text-xl font-bold text-slate-900">Produção Musical</h3>
+                            <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Equipe</span>
+                        </div>
+
+                        <div class="space-y-5">
+                            <div>
+                                <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-2">Produtores</p>
+                                <div class="text-sm text-slate-700 leading-relaxed">${produtoresTexto}</div>
+                            </div>
+
+                            <div class="border-t border-slate-200 pt-4">
+                                <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-2">Músicos</p>
+                                <div class="text-sm text-slate-700 leading-relaxed">${musicosTexto}</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    ${blocoStatus('Status do Projeto', projeto.status_geral, projeto.status_geral_data_inicio, projeto.status_geral_data_conclusao)}
+                    ${blocoStatus('Status da Capa', projeto.capa_status, projeto.capa_data_inicio, projeto.capa_data_conclusao)}
+                </section>
+
+                <section class="bg-white rounded-2xl border border-slate-200 shadow-soft p-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900">Faixas</h3>
+                            <p class="text-sm text-slate-500 mt-1">Ficha técnica individual de cada música do projeto.</p>
+                        </div>
+                        <span class="inline-flex items-center rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
+                            ${faixas.length} faixa${faixas.length === 1 ? '' : 's'}
+                        </span>
+                    </div>
+
+                    <div class="space-y-5">
+                        ${faixas.length ? faixas.map((faixa) => {
+                            const compositores = (participantesPorFaixa[faixa.id]?.compositores || [])
+                                .map(c => escaparHtml(c.nome_artistico || c.nome_completo || '—'))
+                                .join(', ') || '—';
+
+                            const interpretes = (participantesPorFaixa[faixa.id]?.interpretes || [])
+                                .map(i => escaparHtml(i.nome_artistico || i.nome_completo || '—'))
+                                .join(', ') || '—';
+
+                            return `
+                                <article class="rounded-2xl border border-slate-200 bg-slate-50/70 p-5">
+                                    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-5">
+                                        <div>
+                                            <div class="flex items-center gap-3 flex-wrap">
+                                                <span class="inline-flex items-center justify-center h-9 min-w-9 px-3 rounded-xl bg-brand-600 text-white text-sm font-bold">
+                                                    ${faixa.numero_faixa || '—'}
+                                                </span>
+                                                <h4 class="text-lg font-bold text-slate-900">
+                                                    ${escaparHtml(faixa.titulo || 'Faixa sem título')}
+                                                </h4>
+                                            </div>
+                                            <p class="text-sm text-slate-500 mt-2">
+                                                ${resumoStatus(faixa.audio_status, faixa.audio_data_inicio, faixa.audio_data_conclusao)}
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            ${badgeStatus(faixa.audio_status)}
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                                        ${itemInfo('ISRC', escaparHtml(faixa.isrc || '—'))}
+                                        ${itemInfo('Hook TikTok', escaparHtml(faixa.hook_tiktok || '—'))}
+                                        ${itemInfo('Feat.', escaparHtml(faixa.feat || '—'))}
+                                        ${itemInfo('Iniciado em', formatarData(faixa.audio_data_inicio))}
+                                        ${itemInfo('Concluído em', formatarData(faixa.audio_data_conclusao))}
+                                        ${itemInfo('Número da Faixa', faixa.numero_faixa || '—')}
+                                    </div>
+
+                                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-4">
+                                        <div class="bg-white rounded-xl border border-slate-200 px-4 py-4">
+                                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Compositores</p>
+                                            <div class="text-sm text-slate-700 leading-relaxed">${compositores}</div>
+                                        </div>
+
+                                        <div class="bg-white rounded-xl border border-slate-200 px-4 py-4">
+                                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Intérpretes</p>
+                                            <div class="text-sm text-slate-700 leading-relaxed">${interpretes}</div>
+                                        </div>
+                                    </div>
+
+                                    ${faixa.letra ? `
+                                        <div class="print-letra mt-4 bg-white rounded-xl border border-slate-200 overflow-hidden">
+                                            <button
+                                                type="button"
+                                                class="toggle-letra w-full flex items-center justify-between px-4 py-4 text-left hover:bg-slate-50 transition no-print"
+                                            >
+                                                <span class="text-xs font-semibold uppercase tracking-wide text-slate-600">Letra</span>
+                                                <span class="text-sm text-slate-500">Mostrar / Ocultar</span>
+                                            </button>
+
+                                            <div class="letra-conteudo hidden px-4 pb-4 text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+                                                ${nl2br(faixa.letra)}
+                                            </div>
+                                        </div>
+                                    ` : `
+                                        <div class="mt-4 bg-white rounded-xl border border-slate-200 px-4 py-4">
+                                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Letra</p>
+                                            <p class="text-sm text-slate-500">Sem letra cadastrada</p>
+                                        </div>
+                                    `}
+                                </article>
+                            `;
+                        }).join('') : `
+                            <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center text-slate-500">
+                                Nenhuma faixa cadastrada para este projeto.
+                            </div>
+                        `}
+                    </div>
+                </section>
+
+                <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="xl:col-span-1 bg-white rounded-2xl border border-slate-200 shadow-soft p-6">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3 class="text-xl font-bold text-slate-900">Links e Arquivos</h3>
+                            <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Referências</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-1">Backup URL</p>
+                                ${projeto.backup_url
+                                    ? `<a href="${escaparHtml(projeto.backup_url)}" target="_blank" rel="noopener noreferrer" class="text-sm text-brand-700 hover:text-brand-800 break-all font-medium">${escaparHtml(projeto.backup_url)}</a>`
+                                    : `<p class="text-sm text-slate-700">—</p>`}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-soft p-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-xl font-bold text-slate-900">Release</h3>
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Texto</span>
+                                </div>
+                                <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 min-h-[180px] text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+                                    ${projeto.release_texto ? nl2br(projeto.release_texto) : '—'}
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-xl font-bold text-slate-900">Notas Internas</h3>
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Observações</span>
+                                </div>
+                                <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 min-h-[180px] text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+                                    ${projeto.notas ? nl2br(projeto.notas) : '—'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+
+            container.innerHTML = html;
+
+            container.querySelectorAll('.toggle-letra').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const wrapper = btn.closest('.print-letra');
+                    const conteudo = wrapper.querySelector('.letra-conteudo');
+                    conteudo.classList.toggle('hidden');
+                });
+            });
+        }
+
+        function montarFichaTecnicaImpressao(incluirLetra = false) {
+            if (!projetoAtual) return;
+
+            const printContainer = document.getElementById('print-ficha-container');
+
+            const participantesPorFaixa = {};
+            const participantesGlobais = { produtores: [], musicos: [] };
+
+            participantesAtuais.forEach(p => {
+                const papel = p.papel;
+
+                if (p.faixa_id) {
+                    if (!participantesPorFaixa[p.faixa_id]) {
+                        participantesPorFaixa[p.faixa_id] = { compositores: [], interpretes: [] };
+                    }
+
+                    if (papel === 'AUTOR') {
+                        participantesPorFaixa[p.faixa_id].compositores.push(p.pessoas?.nome_artistico || p.pessoas?.nome_completo || '—');
+                    }
+
+                    if (papel === 'INTERPRETE') {
+                        participantesPorFaixa[p.faixa_id].interpretes.push(p.pessoas?.nome_artistico || p.pessoas?.nome_completo || '—');
+                    }
+                } else {
+                    if (papel === 'PRODUTOR_MUSICAL') {
+                        participantesGlobais.produtores.push(p.pessoas?.nome_artistico || p.pessoas?.nome_completo || '—');
+                    }
+
+                    if (papel === 'MUSICO') {
+                        const nome = p.pessoas?.nome_artistico || p.pessoas?.nome_completo || '—';
+                        const instrumento = p.instrumento ? ` (${p.instrumento})` : '';
+                        participantesGlobais.musicos.push(`${nome}${instrumento}`);
+                    }
+                }
+            });
+
+            const formatarData = (data) => {
+                if (!data) return '—';
+                return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
+            };
+
+            const escapeHtml = (texto) => {
+                if (!texto) return '';
+                return String(texto)
+                    .replaceAll('&', '&amp;')
+                    .replaceAll('<', '&lt;')
+                    .replaceAll('>', '&gt;')
+                    .replaceAll('"', '&quot;')
+                    .replaceAll("'", '&#039;');
+            };
+
+            const statusTexto = (status) => {
+                const mapa = {
+                    AINDA_NAO_TEM: 'Ainda não tem',
+                    EM_ANDAMENTO: 'Em andamento',
+                    CONCLUIDO: 'Concluído'
+                };
+                return mapa[status] || status || '—';
+            };
+
+            const calcularDias = (inicio, fim = null) => {
+                if (!inicio) return null;
+                const d1 = new Date(inicio + 'T00:00:00');
+                const d2 = fim ? new Date(fim + 'T00:00:00') : new Date();
+                return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
+            };
+
+            const resumoStatus = (status, inicio, conclusao) => {
+                if (status === 'EM_ANDAMENTO' && inicio) {
+                    const dias = calcularDias(inicio);
+                    return `Em andamento há ${dias} dia${dias === 1 ? '' : 's'}`;
+                }
+                if (status === 'CONCLUIDO' && inicio && conclusao) {
+                    const dias = calcularDias(inicio, conclusao);
+                    return `Concluído em ${dias} dia${dias === 1 ? '' : 's'}`;
+                }
+                if (status === 'AINDA_NAO_TEM') return 'Sem atividade iniciada';
+                return '—';
+            };
+
+            const campo = (label, valor) => `
+                <div class="print-field">
+                    <span class="print-label">${label}</span>
+                    <div class="print-value">${valor || '—'}</div>
+                </div>
+            `;
+
+            const html = `
+                <div class="print-doc">
+                    <div class="print-header">
+                        <div class="print-brand">Polymusic • Ficha Técnica de Projeto</div>
+                        <h1 class="print-title">${escapeHtml(projetoAtual.nome_projeto || 'Projeto sem nome')}</h1>
+                        <div class="print-subtitle">
+                            ${escapeHtml(projetoAtual.titulo || 'Sem título principal')} • ${escapeHtml(projetoAtual.formato || '—')}
+                        </div>
+                    </div>
+
+                    <section class="print-section">
+                        <div class="print-section-title">Informações Gerais</div>
+                        <div class="print-grid-3">
+                            ${campo('Nome do Projeto', escapeHtml(projetoAtual.nome_projeto || '—'))}
+                            ${campo('Título Principal', escapeHtml(projetoAtual.titulo || '—'))}
+                            ${campo('Formato', escapeHtml(projetoAtual.formato || '—'))}
+                            ${campo('Data de Lançamento', formatarData(projetoAtual.data_lancamento))}
+                            ${campo('Gênero / Subgênero', escapeHtml(projetoAtual.genero_subgenero || '—'))}
+                            ${campo('Label', escapeHtml(projetoAtual.label || '—'))}
+                            ${campo('Spotify ID', escapeHtml(projetoAtual.spotify_id || '—'))}
+                            ${campo('Apple Music ID', escapeHtml(projetoAtual.apple_music_id || '—'))}
+                            ${campo('Prioridade', projetoAtual.is_prioridade ? 'Sim' : 'Não')}
+                        </div>
+                    </section>
+
+                    <section class="print-section">
+                        <div class="print-section-title">Andamento de Produção</div>
+                        <div class="print-grid-2">
+                            <div>
+                                ${campo('Status do Projeto', statusTexto(projetoAtual.status_geral))}
+                                ${campo('Início do Projeto', formatarData(projetoAtual.status_geral_data_inicio))}
+                                ${campo('Conclusão do Projeto', formatarData(projetoAtual.status_geral_data_conclusao))}
+                                ${campo('Resumo do Projeto', resumoStatus(projetoAtual.status_geral, projetoAtual.status_geral_data_inicio, projetoAtual.status_geral_data_conclusao))}
+                            </div>
+                            <div>
+                                ${campo('Status da Capa', statusTexto(projetoAtual.capa_status))}
+                                ${campo('Início da Capa', formatarData(projetoAtual.capa_data_inicio))}
+                                ${campo('Conclusão da Capa', formatarData(projetoAtual.capa_data_conclusao))}
+                                ${campo('Resumo da Capa', resumoStatus(projetoAtual.capa_status, projetoAtual.capa_data_inicio, projetoAtual.capa_data_conclusao))}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="print-section">
+                        <div class="print-section-title">Produção Musical</div>
+                        <div class="print-grid-2">
+                            ${campo('Produtores', escapeHtml(participantesGlobais.produtores.join(', ') || '—'))}
+                            ${campo('Músicos', escapeHtml(participantesGlobais.musicos.join(', ') || '—'))}
+                        </div>
+                    </section>
+
+                    <section class="print-section">
+                        <div class="print-section-title">Faixas</div>
+                        ${faixasAtuais.length ? faixasAtuais.map((faixa) => {
+                            const compositores = (participantesPorFaixa[faixa.id]?.compositores || []).join(', ') || '—';
+                            const interpretes = (participantesPorFaixa[faixa.id]?.interpretes || []).join(', ') || '—';
+
+                            return `
+                                <div class="print-faixa">
+                                    <div class="print-faixa-head">
+                                        <div>
+                                            <div class="print-faixa-numero">Faixa ${escapeHtml(faixa.numero_faixa || '—')}</div>
+                                            <div class="print-faixa-titulo">${escapeHtml(faixa.titulo || 'Faixa sem título')}</div>
+                                            <div class="print-mini">${resumoStatus(faixa.audio_status, faixa.audio_data_inicio, faixa.audio_data_conclusao)}</div>
+                                        </div>
+                                        <div class="print-mini">Status: ${statusTexto(faixa.audio_status)}</div>
+                                    </div>
+
+                                    <div class="print-grid-3">
+                                        ${campo('ISRC', escapeHtml(faixa.isrc || '—'))}
+                                        ${campo('Hook TikTok', escapeHtml(faixa.hook_tiktok || '—'))}
+                                        ${campo('Feat.', escapeHtml(faixa.feat || '—'))}
+                                        ${campo('Início do Áudio', formatarData(faixa.audio_data_inicio))}
+                                        ${campo('Conclusão do Áudio', formatarData(faixa.audio_data_conclusao))}
+                                        ${campo('Número', escapeHtml(faixa.numero_faixa || '—'))}
+                                    </div>
+
+                                    <div class="print-grid-2" style="margin-top: 8px;">
+                                        ${campo('Compositores', escapeHtml(compositores))}
+                                        ${campo('Intérpretes', escapeHtml(interpretes))}
+                                    </div>
+
+                                    ${incluirLetra && faixa.letra ? `
+                                        <div class="print-letra-bloco">
+                                            <div class="print-label">Letra</div>
+                                            <div class="print-letra-texto">${escapeHtml(faixa.letra)}</div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        }).join('') : `
+                            <div class="print-value">Nenhuma faixa cadastrada.</div>
+                        `}
+                    </section>
+
+                    <section class="print-section">
+                        <div class="print-section-title">Observações e Referências</div>
+                        <div class="print-grid-2">
+                            ${campo('Backup URL', escapeHtml(projetoAtual.backup_url || '—'))}
+                            ${campo('Release', escapeHtml(projetoAtual.release_texto || '—'))}
+                        </div>
+                        <div style="margin-top: 8px;">
+                            ${campo('Notas Internas', escapeHtml(projetoAtual.notas || '—'))}
+                        </div>
+                    </section>
+                </div>
+            `;
+
+            printContainer.innerHTML = html;
+        }
+
+        function configurarAcoesTopo() {
+            const btnImprimir = document.getElementById('btn-imprimir');
+            const btnExportarCsv = document.getElementById('btn-exportar-csv');
+
+            if (btnImprimir) {
+                btnImprimir.addEventListener('click', () => {
+                    const incluirLetra = window.confirm('Deseja imprimir a ficha com a letra das faixas?');
+
+                    montarFichaTecnicaImpressao(incluirLetra);
+
+                    const body = document.body;
+                    if (incluirLetra) {
+                        body.classList.remove('print-with-lyrics-hidden');
+                    } else {
+                        body.classList.add('print-with-lyrics-hidden');
+                    }
+
+                    window.print();
+                });
+            }
+
+            if (btnExportarCsv) {
+                btnExportarCsv.addEventListener('click', () => {
+                    exportarProjetoCSV();
+                });
+            }
+        }
+
+        function csvEscape(valor) {
+            if (valor === null || valor === undefined) return '""';
+            const texto = String(valor).replace(/"/g, '""');
+            return `"${texto}"`;
+        }
+
+        function formatarDataCSV(data) {
+            if (!data) return '';
+            return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
+        }
+
+        function statusTextoCSV(status) {
+            const mapa = {
+                AINDA_NAO_TEM: 'Ainda não tem',
+                EM_ANDAMENTO: 'Em andamento',
+                CONCLUIDO: 'Concluído'
+            };
+            return mapa[status] || status || '';
+        }
+
+        function exportarProjetoCSV() {
+            if (!projetoAtual) {
+                alert('Projeto ainda não carregado.');
+                return;
+            }
+
+            const participantesPorFaixa = {};
+            const participantesGlobais = { produtores: [], musicos: [] };
+
+            participantesAtuais.forEach(p => {
+                const papel = p.papel;
+
+                if (p.faixa_id) {
+                    if (!participantesPorFaixa[p.faixa_id]) {
+                        participantesPorFaixa[p.faixa_id] = { compositores: [], interpretes: [] };
+                    }
+
+                    if (papel === 'AUTOR') {
+                        participantesPorFaixa[p.faixa_id].compositores.push(p.pessoas?.nome_artistico || p.pessoas?.nome_completo || '');
+                    }
+
+                    if (papel === 'INTERPRETE') {
+                        participantesPorFaixa[p.faixa_id].interpretes.push(p.pessoas?.nome_artistico || p.pessoas?.nome_completo || '');
+                    }
+                } else {
+                    if (papel === 'PRODUTOR_MUSICAL') {
+                        participantesGlobais.produtores.push(p.pessoas?.nome_artistico || p.pessoas?.nome_completo || '');
+                    }
+
+                    if (papel === 'MUSICO') {
+                        const nome = p.pessoas?.nome_artistico || p.pessoas?.nome_completo || '';
+                        const instrumento = p.instrumento ? ` (${p.instrumento})` : '';
+                        participantesGlobais.musicos.push(`${nome}${instrumento}`);
+                    }
+                }
+            });
+
+            const linhas = [];
+
+            linhas.push([
+                'Nome do Projeto',
+                'Título Principal',
+                'Formato',
+                'Data de Lançamento',
+                'Gênero / Subgênero',
+                'Label',
+                'Prioridade',
+                'Status Geral',
+                'Início Projeto',
+                'Conclusão Projeto',
+                'Status Capa',
+                'Início Capa',
+                'Conclusão Capa',
+                'Spotify ID',
+                'Apple Music ID',
+                'Backup URL',
+                'Produtores',
+                'Músicos',
+                'Número da Faixa',
+                'Título da Faixa',
+                'ISRC',
+                'Hook TikTok',
+                'Feat.',
+                'Status Áudio',
+                'Início Áudio',
+                'Conclusão Áudio',
+                'Compositores',
+                'Intérpretes',
+                'Letra'
+            ].map(csvEscape).join(';'));
+
+            if (faixasAtuais.length === 0) {
+                linhas.push([
+                    projetoAtual.nome_projeto || '',
+                    projetoAtual.titulo || '',
+                    projetoAtual.formato || '',
+                    formatarDataCSV(projetoAtual.data_lancamento),
+                    projetoAtual.genero_subgenero || '',
+                    projetoAtual.label || '',
+                    projetoAtual.is_prioridade ? 'Sim' : 'Não',
+                    statusTextoCSV(projetoAtual.status_geral),
+                    formatarDataCSV(projetoAtual.status_geral_data_inicio),
+                    formatarDataCSV(projetoAtual.status_geral_data_conclusao),
+                    statusTextoCSV(projetoAtual.capa_status),
+                    formatarDataCSV(projetoAtual.capa_data_inicio),
+                    formatarDataCSV(projetoAtual.capa_data_conclusao),
+                    projetoAtual.spotify_id || '',
+                    projetoAtual.apple_music_id || '',
+                    projetoAtual.backup_url || '',
+                    participantesGlobais.produtores.join(', '),
+                    participantesGlobais.musicos.join(', '),
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    'Sem letra'
+                ].map(csvEscape).join(';'));
+            } else {
+                faixasAtuais.forEach((faixa) => {
+                    const compositores = (participantesPorFaixa[faixa.id]?.compositores || []).join(', ');
+                    const interpretes = (participantesPorFaixa[faixa.id]?.interpretes || []).join(', ');
+                    const infoLetra = faixa.letra && faixa.letra.trim() ? 'Tem letra' : 'Sem letra';
+
+                    linhas.push([
+                        projetoAtual.nome_projeto || '',
+                        projetoAtual.titulo || '',
+                        projetoAtual.formato || '',
+                        formatarDataCSV(projetoAtual.data_lancamento),
+                        projetoAtual.genero_subgenero || '',
+                        projetoAtual.label || '',
+                        projetoAtual.is_prioridade ? 'Sim' : 'Não',
+                        statusTextoCSV(projetoAtual.status_geral),
+                        formatarDataCSV(projetoAtual.status_geral_data_inicio),
+                        formatarDataCSV(projetoAtual.status_geral_data_conclusao),
+                        statusTextoCSV(projetoAtual.capa_status),
+                        formatarDataCSV(projetoAtual.capa_data_inicio),
+                        formatarDataCSV(projetoAtual.capa_data_conclusao),
+                        projetoAtual.spotify_id || '',
+                        projetoAtual.apple_music_id || '',
+                        projetoAtual.backup_url || '',
+                        participantesGlobais.produtores.join(', '),
+                        participantesGlobais.musicos.join(', '),
+                        faixa.numero_faixa || '',
+                        faixa.titulo || '',
+                        faixa.isrc || '',
+                        faixa.hook_tiktok || '',
+                        faixa.feat || '',
+                        statusTextoCSV(faixa.audio_status),
+                        formatarDataCSV(faixa.audio_data_inicio),
+                        formatarDataCSV(faixa.audio_data_conclusao),
+                        compositores,
+                        interpretes,
+                        infoLetra
+                    ].map(csvEscape).join(';'));
+                });
+            }
+
+            const csvContent = '\uFEFF' + linhas.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            const nomeArquivo = (projetoAtual.nome_projeto || 'projeto')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^\w\s-]/g, '')
+                .trim()
+                .replace(/\s+/g, '_');
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `ficha_tecnica_${nomeArquivo}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

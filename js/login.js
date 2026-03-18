@@ -1,9 +1,15 @@
 import { supabase } from './supabase-config.js';
 
+// Seletores do DOM
 const loginForm = document.getElementById('login-form');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const confirmPasswordInput = document.getElementById('confirm-password');
+
+// Novos seletores de registo
+const registerFieldsWrapper = document.getElementById('register-fields-wrapper');
+const nomeInput = document.getElementById('nome');
+const cargoInput = document.getElementById('cargo');
 
 const btnLogin = document.getElementById('btn-login');
 const toggleAuthModeBtn = document.getElementById('toggle-auth-mode');
@@ -17,6 +23,38 @@ const forgotPasswordLink = document.getElementById('forgot-password-link');
 
 let isRegisterMode = false;
 
+// ----------------------------------------------------
+// Funções Auxiliares de Geolocalização
+// ----------------------------------------------------
+function obterLocalizacao() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error("A geolocalização não é suportada pelo seu navegador."));
+    } else {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      });
+    }
+  });
+}
+
+// Fórmula de Haversine para calcular a distância (em KM)
+function calcularDistancia(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Raio da Terra em km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c; 
+}
+
+// ----------------------------------------------------
+// Controlo de Interface
+// ----------------------------------------------------
 function showMessage(message, type = 'error') {
   authMessage.textContent = message;
   authMessage.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'border', 'border-red-200', 'bg-green-50', 'text-green-700', 'border-green-200');
@@ -37,32 +75,51 @@ function updateMode() {
   clearMessage();
 
   if (isRegisterMode) {
-    formTitle.textContent = 'Criar cadastro';
-    formSubtitle.textContent = 'Preencha seus dados para criar um novo acesso no sistema.';
+    formTitle.textContent = 'Criar registo';
+    formSubtitle.textContent = 'Preencha os seus dados para criar um novo acesso no sistema.';
     btnLogin.textContent = 'Criar Conta';
     toggleAuthModeBtn.textContent = 'Já tem conta? Entrar';
+    
+    // Mostra campos de registo
+    registerFieldsWrapper.classList.remove('hidden');
     confirmPasswordWrapper.classList.remove('hidden');
     forgotPasswordLink.classList.add('hidden');
     rememberWrapper.classList.add('hidden');
+    
+    // Exige os campos extra
     confirmPasswordInput.required = true;
+    nomeInput.required = true;
+    cargoInput.required = true;
   } else {
     formTitle.textContent = 'Acessar sistema';
-    formSubtitle.textContent = 'Entre com suas credenciais para acessar o painel administrativo.';
+    formSubtitle.textContent = 'Entre com as suas credenciais para aceder ao painel administrativo.';
     btnLogin.textContent = 'Entrar no Sistema';
-    toggleAuthModeBtn.textContent = 'Não tem conta? Criar cadastro';
+    toggleAuthModeBtn.textContent = 'Não tem conta? Criar registo';
+    
+    // Oculta campos de registo
+    registerFieldsWrapper.classList.add('hidden');
     confirmPasswordWrapper.classList.add('hidden');
     forgotPasswordLink.classList.remove('hidden');
     rememberWrapper.classList.remove('hidden');
+    
+    // Repõe validações extra
     confirmPasswordInput.required = false;
+    nomeInput.required = false;
+    cargoInput.required = false;
     confirmPasswordInput.value = '';
+    nomeInput.value = '';
+    cargoInput.value = '';
   }
 }
 
-function setLoading(isLoading, label = 'Processando...') {
+function setLoading(isLoading, label = 'A processar...') {
   btnLogin.disabled = isLoading;
   btnLogin.textContent = isLoading ? label : (isRegisterMode ? 'Criar Conta' : 'Entrar no Sistema');
 }
 
+// ----------------------------------------------------
+// Eventos
+// ----------------------------------------------------
 toggleAuthModeBtn.addEventListener('click', () => {
   isRegisterMode = !isRegisterMode;
   updateMode();
@@ -71,11 +128,10 @@ toggleAuthModeBtn.addEventListener('click', () => {
 forgotPasswordLink.addEventListener('click', async (e) => {
   e.preventDefault();
   clearMessage();
-
   const email = emailInput.value.trim();
 
   if (!email) {
-    showMessage('Digite seu e-mail para receber o link de redefinição de senha.');
+    showMessage('Digite o seu e-mail para receber a ligação de redefinição de palavra-passe.');
     return;
   }
 
@@ -89,9 +145,9 @@ forgotPasswordLink.addEventListener('click', async (e) => {
       return;
     }
 
-    showMessage('Link de redefinição enviado para seu e-mail.', 'success');
+    showMessage('Ligação de redefinição enviada para o seu e-mail.', 'success');
   } catch (err) {
-    showMessage('Erro inesperado ao solicitar redefinição de senha.');
+    showMessage('Erro inesperado ao solicitar redefinição de palavra-passe.');
     console.error(err);
   }
 });
@@ -103,29 +159,63 @@ loginForm.addEventListener('submit', async (e) => {
   const email = emailInput.value.trim();
   const password = passwordInput.value;
   const confirmPassword = confirmPasswordInput.value;
+  const nome = nomeInput.value.trim();
+  const cargo = cargoInput.value;
 
   if (!email || !password) {
-    showMessage('Preencha e-mail e senha.');
+    showMessage('Preencha o e-mail e a palavra-passe.');
     return;
   }
 
+  // Lógica de Registo
   if (isRegisterMode) {
     if (password.length < 6) {
-      showMessage('A senha deve ter pelo menos 6 caracteres.');
+      showMessage('A palavra-passe deve ter pelo menos 6 caracteres.');
       return;
     }
-
     if (password !== confirmPassword) {
-      showMessage('As senhas não conferem.');
+      showMessage('As palavras-passe não coincidem.');
       return;
     }
 
-    setLoading(true, 'Criando conta...');
+    setLoading(true, 'A verificar localização...');
+
+    try {
+      const position = await obterLocalizacao();
+      const latUsuario = position.coords.latitude;
+      const lonUsuario = position.coords.longitude;
+
+      // Coordenadas aproximadas do Plus Code W4F3+RC (São José, Recife - PE)
+      const latAlvo = -8.0691;
+      const lonAlvo = -34.8783;
+
+      const distancia = calcularDistancia(latUsuario, lonUsuario, latAlvo, lonAlvo);
+
+      // Limite de 0.5km (500 metros). Pode ajustar este valor se necessário.
+      if (distancia > 0.5) {
+        showMessage('Acesso negado: Precisa de estar fisicamente no escritório em São José para criar uma conta.');
+        setLoading(false);
+        return;
+      }
+    } catch (err) {
+      showMessage('Para criar uma conta, é obrigatório permitir o acesso à sua localização no navegador.');
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true, 'A criar conta...');
 
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          data: {
+            nome: nome,
+            cargo: cargo,
+            status: 'ativo'
+          }
+        }
       });
 
       if (error) {
@@ -134,13 +224,12 @@ loginForm.addEventListener('submit', async (e) => {
       }
 
       if (data?.user) {
-        showMessage(
-          'Cadastro realizado com sucesso. Verifique seu e-mail para confirmar a conta, se a confirmação estiver habilitada no Supabase.',
-          'success'
-        );
+        showMessage('Registo efetuado! O utilizador já pode gerir lançamentos internamente.', 'success');
         loginForm.reset();
+        isRegisterMode = false;
+        updateMode();
       } else {
-        showMessage('Conta criada, mas não foi possível confirmar o retorno do usuário.', 'success');
+        showMessage('Conta criada, mas não foi possível confirmar o retorno do utilizador.', 'success');
       }
     } catch (err) {
       console.error(err);
@@ -148,11 +237,11 @@ loginForm.addEventListener('submit', async (e) => {
     } finally {
       setLoading(false);
     }
-
     return;
   }
 
-  setLoading(true, 'Verificando...');
+  // Lógica de Início de Sessão Padrão
+  setLoading(true, 'A verificar...');
 
   try {
     const { error } = await supabase.auth.signInWithPassword({
@@ -161,17 +250,18 @@ loginForm.addEventListener('submit', async (e) => {
     });
 
     if (error) {
-      showMessage('Erro no login: ' + error.message);
+      showMessage('Erro no início de sessão: ' + error.message);
       return;
     }
 
     window.location.href = 'dashboard.html';
   } catch (err) {
     console.error(err);
-    showMessage('Erro inesperado ao fazer login.');
+    showMessage('Erro inesperado ao iniciar sessão.');
   } finally {
     setLoading(false);
   }
 });
 
+// Inicializa a interface
 updateMode();

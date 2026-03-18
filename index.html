@@ -44,7 +44,6 @@
 <body class="min-h-screen text-white">
   <div class="min-h-screen grid lg:grid-cols-2">
 
-    <!-- Painel institucional -->
     <section class="hidden lg:flex relative overflow-hidden">
       <div class="absolute inset-0 bg-gradient-to-br from-brand-700/20 via-transparent to-cyan-400/10"></div>
 
@@ -101,7 +100,6 @@
       </div>
     </section>
 
-    <!-- Área do login/cadastro -->
     <section class="flex items-center justify-center px-6 py-10 sm:px-8 lg:px-12">
       <div class="w-full max-w-md">
         <div class="lg:hidden text-center mb-8">
@@ -123,6 +121,39 @@
           <div id="auth-message" class="hidden mb-5 rounded-xl px-4 py-3 text-sm font-medium"></div>
 
           <form id="login-form" class="space-y-5">
+            
+            <div id="register-fields-wrapper" class="hidden space-y-5 mb-5">
+              <div>
+                <label for="nome" class="block text-sm font-semibold text-slate-700 mb-2">
+                  Nome Completo
+                </label>
+                <input
+                  type="text"
+                  id="nome"
+                  name="nome"
+                  placeholder="Seu nome completo"
+                  class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label for="cargo" class="block text-sm font-semibold text-slate-700 mb-2">
+                  Cargo
+                </label>
+                <select
+                  id="cargo"
+                  name="cargo"
+                  class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-slate-800 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 outline-none transition"
+                >
+                  <option value="" disabled selected>Selecione um cargo...</option>
+                  <option value="Administrador">Administrador</option>
+                  <option value="Editor">Editor</option>
+                  <option value="Operacional">Operacional</option>
+                  <option value="Financeiro">Financeiro</option>
+                </select>
+              </div>
+            </div>
+
             <div>
               <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">
                 E-mail

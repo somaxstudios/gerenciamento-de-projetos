@@ -1,140 +1,359 @@
 import { supabase } from './supabase-config.js';
 
-async function carregarDashboard() {
-    // ========== CARDS (TOTAIS) ==========
-    const { count: totalProjetos } = await supabase
-        .from('projetos')
-        .select('*', { count: 'exact', head: true });
+let chartPlataforma = null;
+let chartLancamento = null;
+let chartPipeline = null;
 
-    const { count: totalPrioridades } = await supabase
-        .from('projetos')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_prioridade', true);
-
-    const { count: audioPendente } = await supabase
-        .from('projetos')
-        .select('*', { count: 'exact', head: true })
-        .neq('audio_status', 'CONCLUIDO');
-
-    const { count: capaPendente } = await supabase
-        .from('projetos')
-        .select('*', { count: 'exact', head: true })
-        .neq('capa_status', 'CONCLUIDO');
-
-    document.getElementById('total-projetos').innerText = totalProjetos ?? 0;
-    document.getElementById('total-prioridades').innerText = totalPrioridades ?? 0;
-    document.getElementById('audio-pendente').innerText = audioPendente ?? 0;
-    document.getElementById('capa-pendente').innerText = capaPendente ?? 0;
-
-    // ========== PRÓXIMOS LANÇAMENTOS (7 dias) ==========
-    const hoje = new Date().toISOString().split('T')[0];
-    const seteDias = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
-    const { data: proximos } = await supabase
-        .from('projetos')
-        .select('id, nome_projeto, titulo, data_lancamento')
-        .gte('data_lancamento', hoje)
-        .lte('data_lancamento', seteDias)
-        .order('data_lancamento', { ascending: true })
-        .limit(5);
-
-    const listaProximos = document.getElementById('lista-proximos');
-    if (proximos && proximos.length > 0) {
-        listaProximos.innerHTML = proximos.map(p => `
-            <div class="flex justify-between items-center border-b pb-2 last:border-0">
-                <div>
-                    <a href="editar-projeto.html?id=${p.id}" class="font-medium hover:text-blue-600">${p.nome_projeto}</a>
-                    <span class="text-xs text-slate-400 block">${p.titulo || '—'}</span>
-                </div>
-                <span class="text-sm text-slate-500">${new Date(p.data_lancamento).toLocaleDateString('pt-BR')}</span>
-            </div>
-        `).join('');
-    } else {
-        listaProximos.innerHTML = '<p class="text-slate-400">Nenhum lançamento agendado para esta semana.</p>';
-    }
-
-    // ========== ÁUDIO EM ABERTO (top 5) ==========
-    const { data: audioPendentes } = await supabase
-        .from('projetos')
-        .select('id, nome_projeto, titulo, audio_status, audio_data_inicio')
-        .neq('audio_status', 'CONCLUIDO')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-    const listaAudio = document.getElementById('lista-audio-pendente');
-    if (audioPendentes && audioPendentes.length > 0) {
-        listaAudio.innerHTML = audioPendentes.map(p => `
-            <div class="flex items-start gap-2 border-b pb-2 last:border-0">
-                <span class="text-blue-600 text-lg">🎵</span>
-                <div class="flex-1">
-                    <a href="editar-projeto.html?id=${p.id}" class="font-medium hover:text-blue-600">${p.nome_projeto}</a>
-                    <span class="text-xs text-slate-400 block">${p.titulo || '—'} • Status: ${traduzirStatus(p.audio_status)}</span>
-                </div>
-                ${p.audio_data_inicio ? `<span class="text-xs text-slate-400">Início: ${new Date(p.audio_data_inicio).toLocaleDateString('pt-BR')}</span>` : ''}
-            </div>
-        `).join('');
-    } else {
-        listaAudio.innerHTML = '<p class="text-slate-400">Nenhum áudio pendente.</p>';
-    }
-
-    // ========== CAPAS EM ABERTO (top 5) ==========
-    const { data: capaPendentes } = await supabase
-        .from('projetos')
-        .select('id, nome_projeto, titulo, capa_status, capa_data_inicio')
-        .neq('capa_status', 'CONCLUIDO')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-    const listaCapa = document.getElementById('lista-capa-pendente');
-    if (capaPendentes && capaPendentes.length > 0) {
-        listaCapa.innerHTML = capaPendentes.map(p => `
-            <div class="flex items-start gap-2 border-b pb-2 last:border-0">
-                <span class="text-purple-600 text-lg">🖼️</span>
-                <div class="flex-1">
-                    <a href="editar-projeto.html?id=${p.id}" class="font-medium hover:text-blue-600">${p.nome_projeto}</a>
-                    <span class="text-xs text-slate-400 block">${p.titulo || '—'} • Status: ${traduzirStatus(p.capa_status)}</span>
-                </div>
-                ${p.capa_data_inicio ? `<span class="text-xs text-slate-400">Início: ${new Date(p.capa_data_inicio).toLocaleDateString('pt-BR')}</span>` : ''}
-            </div>
-        `).join('');
-    } else {
-        listaCapa.innerHTML = '<p class="text-slate-400">Nenhuma capa pendente.</p>';
-    }
-
-    // ========== PROJETOS PRONTOS (concluídos) ==========
-    const { data: projetosProntos } = await supabase
-        .from('projetos')
-        .select('id, nome_projeto, titulo, data_lancamento')
-        .eq('audio_status', 'CONCLUIDO')
-        .eq('capa_status', 'CONCLUIDO')
-        .order('data_lancamento', { ascending: false })
-        .limit(5);
-
-    const listaProntos = document.getElementById('lista-prontos');
-    if (projetosProntos && projetosProntos.length > 0) {
-        listaProntos.innerHTML = projetosProntos.map(p => `
-            <div class="flex items-start gap-2 border-b pb-2 last:border-0">
-                <span class="text-green-600 text-lg">✅</span>
-                <div class="flex-1">
-                    <a href="editar-projeto.html?id=${p.id}" class="font-medium hover:text-blue-600">${p.nome_projeto}</a>
-                    <span class="text-xs text-slate-400 block">${p.titulo || '—'}</span>
-                </div>
-                ${p.data_lancamento ? `<span class="text-xs text-slate-400">Lançamento: ${new Date(p.data_lancamento).toLocaleDateString('pt-BR')}</span>` : ''}
-            </div>
-        `).join('');
-    } else {
-        listaProntos.innerHTML = '<p class="text-slate-400">Nenhum projeto concluído.</p>';
-    }
-}
-
-// Função auxiliar para traduzir status
 function traduzirStatus(status) {
     const mapa = {
         'AINDA_NAO_TEM': 'Não iniciado',
         'EM_ANDAMENTO': 'Em andamento',
         'CONCLUIDO': 'Concluído'
     };
-    return mapa[status] || status;
+    return mapa[status] || status || '—';
+}
+
+function formatarData(data) {
+    if (!data) return '—';
+    const dt = new Date(data);
+    if (isNaN(dt.getTime())) return '—';
+    return dt.toLocaleDateString('pt-BR');
+}
+
+function destruirGraficos() {
+    if (chartPlataforma) chartPlataforma.destroy();
+    if (chartLancamento) chartLancamento.destroy();
+    if (chartPipeline) chartPipeline.destroy();
+}
+
+function criarGraficoPlataforma(metricas) {
+    const ctx = document.getElementById('grafico-plataforma');
+    if (!ctx) return;
+
+    chartPlataforma = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['The Orchard', 'Believe', 'Sem plataforma'],
+            datasets: [{
+                data: [
+                    metricas.plataformaTheOrchard,
+                    metricas.plataformaBelieve,
+                    metricas.semPlataforma
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '68%',
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label(context) {
+                            return `${context.label}: ${context.raw}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function criarGraficoLancamento(metricas) {
+    const ctx = document.getElementById('grafico-lancamento');
+    if (!ctx) return;
+
+    chartLancamento = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Lançamento'],
+            datasets: [
+                {
+                    label: 'Já lançados',
+                    data: [metricas.totalLancados]
+                },
+                {
+                    label: 'Não lançados',
+                    data: [metricas.totalNaoLancados]
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            borderRadius: 10,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+}
+
+function criarGraficoPipeline(metricas) {
+    const ctx = document.getElementById('grafico-pipeline');
+    if (!ctx) return;
+
+    chartPipeline = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Produção'],
+            datasets: [
+                {
+                    label: 'Áudio em aberto',
+                    data: [metricas.audioPendente]
+                },
+                {
+                    label: 'Capa em aberto',
+                    data: [metricas.capaPendente]
+                },
+                {
+                    label: 'Prontos para lançar',
+                    data: [metricas.prontosParaLancar]
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            borderRadius: 10,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                x: {
+                    stacked: false
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+}
+
+function atualizarCards(metricas) {
+    document.getElementById('total-projetos').innerText = metricas.totalProjetos;
+    document.getElementById('total-prioridades').innerText = metricas.totalPrioridades;
+    document.getElementById('total-lancados').innerText = metricas.totalLancados;
+    document.getElementById('total-nao-lancados').innerText = metricas.totalNaoLancados;
+    document.getElementById('total-prontos-lancar').innerText = metricas.prontosParaLancar;
+    document.getElementById('audio-pendente').innerText = metricas.audioPendente;
+    document.getElementById('capa-pendente').innerText = metricas.capaPendente;
+    document.getElementById('sem-plataforma').innerText = metricas.semPlataforma;
+
+    const resumo = document.getElementById('dashboard-resumo');
+    if (resumo) {
+        resumo.innerHTML = `
+            <strong>${metricas.totalLancados}</strong> lançados,
+            <strong>${metricas.totalNaoLancados}</strong> não lançados e
+            <strong>${metricas.prontosParaLancar}</strong> prontos para publicação.
+            The Orchard: <strong>${metricas.plataformaTheOrchard}</strong> •
+            Believe: <strong>${metricas.plataformaBelieve}</strong>
+        `;
+    }
+}
+
+function renderizarListaProximos(proximos) {
+    const lista = document.getElementById('lista-proximos');
+    if (!lista) return;
+
+    if (!proximos.length) {
+        lista.innerHTML = '<p class="text-slate-400">Nenhum lançamento agendado para esta semana.</p>';
+        return;
+    }
+
+    lista.innerHTML = proximos.map(p => `
+        <div class="flex justify-between items-center border-b pb-3 last:border-0">
+            <div>
+                <a href="editar-projeto.html?id=${p.id}" class="font-medium hover:text-blue-600">${p.nome_projeto || '—'}</a>
+                <span class="text-xs text-slate-400 block">Artista: ${p.titulo || '—'}</span>
+                <span class="text-xs text-slate-400 block">Plataforma: ${p.distribuidora || '—'}</span>
+            </div>
+            <span class="text-sm text-slate-500">${formatarData(p.data_lancamento)}</span>
+        </div>
+    `).join('');
+}
+
+function renderizarListaAudio(audioPendentes) {
+    const lista = document.getElementById('lista-audio-pendente');
+    if (!lista) return;
+
+    if (!audioPendentes.length) {
+        lista.innerHTML = '<p class="text-slate-400">Nenhum áudio pendente.</p>';
+        return;
+    }
+
+    lista.innerHTML = audioPendentes.map(p => `
+        <div class="flex items-start gap-3 border-b pb-3 last:border-0">
+            <span class="text-blue-600 text-lg">🎵</span>
+            <div class="flex-1">
+                <a href="editar-projeto.html?id=${p.id}" class="font-medium hover:text-blue-600">${p.nome_projeto || '—'}</a>
+                <span class="text-xs text-slate-400 block">Artista: ${p.titulo || '—'}</span>
+                <span class="text-xs text-slate-400 block">Status: ${traduzirStatus(p.audio_status)}</span>
+            </div>
+            ${p.audio_data_inicio ? `<span class="text-xs text-slate-400">Início: ${formatarData(p.audio_data_inicio)}</span>` : ''}
+        </div>
+    `).join('');
+}
+
+function renderizarListaCapa(capaPendentes) {
+    const lista = document.getElementById('lista-capa-pendente');
+    if (!lista) return;
+
+    if (!capaPendentes.length) {
+        lista.innerHTML = '<p class="text-slate-400">Nenhuma capa pendente.</p>';
+        return;
+    }
+
+    lista.innerHTML = capaPendentes.map(p => `
+        <div class="flex items-start gap-3 border-b pb-3 last:border-0">
+            <span class="text-purple-600 text-lg">🖼️</span>
+            <div class="flex-1">
+                <a href="editar-projeto.html?id=${p.id}" class="font-medium hover:text-blue-600">${p.nome_projeto || '—'}</a>
+                <span class="text-xs text-slate-400 block">Artista: ${p.titulo || '—'}</span>
+                <span class="text-xs text-slate-400 block">Status: ${traduzirStatus(p.capa_status)}</span>
+            </div>
+            ${p.capa_data_inicio ? `<span class="text-xs text-slate-400">Início: ${formatarData(p.capa_data_inicio)}</span>` : ''}
+        </div>
+    `).join('');
+}
+
+function renderizarListaProntos(prontos) {
+    const lista = document.getElementById('lista-prontos');
+    if (!lista) return;
+
+    if (!prontos.length) {
+        lista.innerHTML = '<p class="text-slate-400">Nenhum projeto pronto para lançar.</p>';
+        return;
+    }
+
+    lista.innerHTML = prontos.map(p => `
+        <div class="flex items-start gap-3 border-b pb-3 last:border-0">
+            <span class="text-emerald-600 text-lg">✅</span>
+            <div class="flex-1">
+                <a href="editar-projeto.html?id=${p.id}" class="font-medium hover:text-blue-600">${p.nome_projeto || '—'}</a>
+                <span class="text-xs text-slate-400 block">Artista: ${p.titulo || '—'}</span>
+                <span class="text-xs text-slate-400 block">Plataforma: ${p.distribuidora || '—'}</span>
+            </div>
+            <span class="text-xs text-slate-400">${p.ja_lancado ? 'Lançado' : 'Pronto'}</span>
+        </div>
+    `).join('');
+}
+
+async function carregarDashboard() {
+    const { data: projetos, error } = await supabase
+        .from('projetos')
+        .select(`
+            id,
+            nome_projeto,
+            titulo,
+            data_lancamento,
+            data_lancamento_real,
+            is_prioridade,
+            audio_status,
+            audio_data_inicio,
+            capa_status,
+            capa_data_inicio,
+            ja_lancado,
+            distribuidora
+        `)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Erro ao carregar dashboard:', error);
+        document.getElementById('dashboard-resumo').textContent = 'Erro ao carregar indicadores.';
+        return;
+    }
+
+    const lista = projetos || [];
+
+    const totalProjetos = lista.length;
+    const totalPrioridades = lista.filter(p => p.is_prioridade === true).length;
+    const totalLancados = lista.filter(p => p.ja_lancado === true).length;
+    const totalNaoLancados = lista.filter(p => p.ja_lancado !== true).length;
+    const audioPendente = lista.filter(p => p.audio_status !== 'CONCLUIDO').length;
+    const capaPendente = lista.filter(p => p.capa_status !== 'CONCLUIDO').length;
+    const prontosParaLancar = lista.filter(
+        p => p.audio_status === 'CONCLUIDO' &&
+             p.capa_status === 'CONCLUIDO' &&
+             p.ja_lancado !== true
+    ).length;
+
+    const plataformaTheOrchard = lista.filter(p => p.distribuidora === 'The Orchard').length;
+    const plataformaBelieve = lista.filter(p => p.distribuidora === 'Believe').length;
+    const semPlataforma = lista.filter(p => !p.distribuidora).length;
+
+    const metricas = {
+        totalProjetos,
+        totalPrioridades,
+        totalLancados,
+        totalNaoLancados,
+        audioPendente,
+        capaPendente,
+        prontosParaLancar,
+        plataformaTheOrchard,
+        plataformaBelieve,
+        semPlataforma
+    };
+
+    atualizarCards(metricas);
+
+    destruirGraficos();
+    criarGraficoPlataforma(metricas);
+    criarGraficoLancamento(metricas);
+    criarGraficoPipeline(metricas);
+
+    const hoje = new Date();
+    const daquiSeteDias = new Date();
+    daquiSeteDias.setDate(hoje.getDate() + 7);
+
+    const proximos = lista
+        .filter(p => {
+            if (!p.data_lancamento) return false;
+            const data = new Date(`${p.data_lancamento}T00:00:00`);
+            return data >= new Date(hoje.toDateString()) && data <= daquiSeteDias;
+        })
+        .sort((a, b) => new Date(a.data_lancamento) - new Date(b.data_lancamento))
+        .slice(0, 5);
+
+    const audioPendentes = lista
+        .filter(p => p.audio_status !== 'CONCLUIDO')
+        .slice(0, 5);
+
+    const capaPendentes = lista
+        .filter(p => p.capa_status !== 'CONCLUIDO')
+        .slice(0, 5);
+
+    const projetosProntos = lista
+        .filter(p =>
+            p.audio_status === 'CONCLUIDO' &&
+            p.capa_status === 'CONCLUIDO'
+        )
+        .slice(0, 5);
+
+    renderizarListaProximos(proximos);
+    renderizarListaAudio(audioPendentes);
+    renderizarListaCapa(capaPendentes);
+    renderizarListaProntos(projetosProntos);
 }
 
 carregarDashboard();

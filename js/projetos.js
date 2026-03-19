@@ -2,6 +2,13 @@ import { supabase } from './supabase-config.js';
 
 let projetos = [];
 
+function escaparValorLike(valor) {
+    return String(valor || '')
+        .replace(/[%]/g, '')
+        .replace(/[.]/g, '')
+        .trim();
+}
+
 function normalizarStatus(status) {
     if (!status) return '';
 
@@ -76,6 +83,47 @@ function badgeStatus(status, tipo = 'audio') {
     return mapa[tipo]?.[s] || `<span class="text-slate-400 text-sm">—</span>`;
 }
 
+function badgeLancamento(jaLancado) {
+    if (jaLancado === true) {
+        return `
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                Já lançado
+            </span>
+        `;
+    }
+
+    if (jaLancado === false) {
+        return `
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                Não lançado
+            </span>
+        `;
+    }
+
+    return `<span class="text-slate-400 text-sm">—</span>`;
+}
+
+function badgePlataforma(plataforma) {
+    if (!plataforma) {
+        return `<span class="text-slate-400 text-sm">—</span>`;
+    }
+
+    const estilos = {
+        'The Orchard': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+        'Believe': 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200'
+    };
+
+    const classe = estilos[plataforma] || 'bg-slate-100 text-slate-700 border-slate-200';
+
+    return `
+        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border ${classe}">
+            ${plataforma}
+        </span>
+    `;
+}
+
 function formatarData(data) {
     if (!data) return '—';
     const dt = new Date(data);
@@ -86,6 +134,7 @@ function formatarData(data) {
 function obterFiltros() {
     return {
         busca: document.getElementById('busca-projeto')?.value?.trim() || '',
+        lancado: document.getElementById('filtro-lancado')?.value || '',
         audio: document.getElementById('filtro-audio')?.value || '',
         capa: document.getElementById('filtro-capa')?.value || ''
     };
@@ -100,7 +149,14 @@ async function carregarTabela() {
         .order('data_lancamento', { ascending: true });
 
     if (filtros.busca) {
-        query = query.ilike('nome_projeto', `%${filtros.busca}%`);
+        const termo = escaparValorLike(filtros.busca);
+        query = query.or(`nome_projeto.ilike.%${termo}%,titulo.ilike.%${termo}%`);
+    }
+
+    if (filtros.lancado === 'true') {
+        query = query.eq('ja_lancado', true);
+    } else if (filtros.lancado === 'false') {
+        query = query.eq('ja_lancado', false);
     }
 
     if (filtros.audio) {
@@ -115,6 +171,7 @@ async function carregarTabela() {
 
     if (error) {
         console.error('Erro ao carregar projetos:', error);
+        alert('Erro ao carregar projetos: ' + error.message);
         return;
     }
 
@@ -129,7 +186,7 @@ function renderizarTabela(lista) {
     if (!lista.length) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="text-center p-8 text-slate-400">
+                <td colspan="9" class="text-center p-8 text-slate-400">
                     Nenhum projeto encontrado com os filtros selecionados.
                 </td>
             </tr>
@@ -142,7 +199,13 @@ function renderizarTabela(lista) {
             ? `<span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-50 text-red-600 border border-red-200 text-lg">●</span>`
             : `<span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 text-slate-400 border border-slate-200 text-lg">●</span>`;
 
-        const lancamento = formatarData(p.data_lancamento);
+        const lancamentoPrevisto = formatarData(p.data_lancamento);
+        const lancamentoReal = formatarData(p.data_lancamento_real);
+
+        let textoLancamento = lancamentoPrevisto;
+        if (p.ja_lancado && p.data_lancamento_real) {
+            textoLancamento = lancamentoReal;
+        }
 
         return `
             <tr data-id="${p.id}" class="hover:bg-slate-50 transition">
@@ -150,16 +213,23 @@ function renderizarTabela(lista) {
 
                 <td class="p-4">
                     <div class="font-semibold text-slate-900 text-lg">${p.nome_projeto || '—'}</div>
-                    <div class="text-sm text-slate-500">${p.titulo || '—'}</div>
+                    <div class="text-sm text-slate-500">Artista: ${p.titulo || '—'}</div>
                 </td>
 
                 <td class="p-4 text-sm font-medium text-slate-700">${p.formato || '—'}</td>
+
+                <td class="p-4">${badgePlataforma(p.distribuidora)}</td>
+
+                <td class="p-4">${badgeLancamento(p.ja_lancado)}</td>
 
                 <td class="p-4">${badgeStatus(p.audio_status, 'audio')}</td>
 
                 <td class="p-4">${badgeStatus(p.capa_status, 'capa')}</td>
 
-                <td class="p-4 text-sm text-slate-700">${lancamento}</td>
+                <td class="p-4 text-sm text-slate-700">
+                    <div>${textoLancamento}</div>
+                    ${p.ja_lancado && p.data_lancamento_real ? `<div class="text-xs text-slate-400 mt-1">Data real</div>` : ''}
+                </td>
 
                 <td class="p-4">
                     <div class="flex items-center justify-center gap-2">
@@ -231,6 +301,7 @@ document.getElementById('tabela-projetos')?.addEventListener('click', async (e) 
 });
 
 document.getElementById('busca-projeto')?.addEventListener('input', carregarTabela);
+document.getElementById('filtro-lancado')?.addEventListener('change', carregarTabela);
 document.getElementById('filtro-audio')?.addEventListener('change', carregarTabela);
 document.getElementById('filtro-capa')?.addEventListener('change', carregarTabela);
 

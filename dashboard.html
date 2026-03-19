@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Polymusic</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-slate-50 flex h-screen text-slate-800">
 
@@ -12,85 +13,153 @@
 
     <main class="flex-1 overflow-y-auto p-8">
         <header class="mb-8">
-            <h1 class="text-3xl font-extrabold text-slate-900">Visão Geral</h1>
-            <p class="text-slate-500">Acompanhe o status da produção e lançamentos.</p>
+            <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-slate-900">Visão Geral Executiva</h1>
+                    <p class="text-slate-500">
+                        Acompanhe produção, lançamentos, plataformas e prontidão dos projetos.
+                    </p>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl px-5 py-4 shadow-sm min-w-[280px]">
+                    <p class="text-xs uppercase tracking-wide text-slate-400 font-semibold">Resumo executivo</p>
+                    <p id="dashboard-resumo" class="text-sm text-slate-600 mt-2 leading-6">
+                        Carregando indicadores...
+                    </p>
+                </div>
+            </div>
         </header>
 
-        <!-- Cards de resumo -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Cards principais -->
+        <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <p class="text-sm font-medium text-slate-500 uppercase">Total de Projetos</p>
-                <p id="total-projetos" class="text-3xl font-bold mt-1 text-slate-900">--</p>
+                <p id="total-projetos" class="text-3xl font-bold mt-2 text-slate-900">--</p>
+                <p class="text-xs text-slate-400 mt-2">Base geral cadastrada</p>
             </div>
+
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <p class="text-sm font-medium text-slate-500 uppercase italic">Prioridades</p>
-                <p id="total-prioridades" class="text-3xl font-bold mt-1 text-orange-600">--</p>
+                <p class="text-sm font-medium text-slate-500 uppercase">Prioridades</p>
+                <p id="total-prioridades" class="text-3xl font-bold mt-2 text-orange-600">--</p>
+                <p class="text-xs text-slate-400 mt-2">Projetos com atenção máxima</p>
             </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm font-medium text-slate-500 uppercase">Já Lançados</p>
+                <p id="total-lancados" class="text-3xl font-bold mt-2 text-emerald-600">--</p>
+                <p class="text-xs text-slate-400 mt-2">Produtos publicados</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm font-medium text-slate-500 uppercase">Não Lançados</p>
+                <p id="total-nao-lancados" class="text-3xl font-bold mt-2 text-amber-600">--</p>
+                <p class="text-xs text-slate-400 mt-2">Produtos ainda não publicados</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-sm font-medium text-slate-500 uppercase">Prontos p/ Lançar</p>
+                <p id="total-prontos-lancar" class="text-3xl font-bold mt-2 text-indigo-600">--</p>
+                <p class="text-xs text-slate-400 mt-2">Áudio + capa concluídos</p>
+            </div>
+        </section>
+
+        <!-- Cards secundários -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <p class="text-sm font-medium text-slate-500 uppercase">Áudio em Aberto</p>
-                <p id="audio-pendente" class="text-3xl font-bold mt-1 text-blue-600">--</p>
+                <p id="audio-pendente" class="text-3xl font-bold mt-2 text-blue-600">--</p>
+                <p class="text-xs text-slate-400 mt-2">Demandas de produção musical</p>
             </div>
+
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <p class="text-sm font-medium text-slate-500 uppercase">Capas em Aberto</p>
-                <p id="capa-pendente" class="text-3xl font-bold mt-1 text-purple-600">--</p>
+                <p id="capa-pendente" class="text-3xl font-bold mt-2 text-purple-600">--</p>
+                <p class="text-xs text-slate-400 mt-2">Pendências de design</p>
             </div>
-        </div>
 
-        <!-- Listas detalhadas (cards horizontais) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Lançamentos Próximos (mantido) -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <h3 class="font-bold text-lg mb-4 text-slate-800 flex items-center justify-between">
-                    <span>📅 Lançamentos Próximos</span>
-                    <span class="text-sm font-normal text-slate-400">(até 7 dias)</span>
-                </h3>
-                <div id="lista-proximos" class="space-y-4 text-sm">
-                    <!-- preenchido via JS -->
+                <p class="text-sm font-medium text-slate-500 uppercase">Sem Plataforma Definida</p>
+                <p id="sem-plataforma" class="text-3xl font-bold mt-2 text-slate-700">--</p>
+                <p class="text-xs text-slate-400 mt-2">Projetos sem distribuidora informada</p>
+            </div>
+        </section>
+
+        <!-- Gráficos -->
+        <section class="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 xl:col-span-1">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-lg text-slate-800">Distribuição por Plataforma</h3>
+                    <span class="text-xs text-slate-400">The Orchard / Believe</span>
+                </div>
+                <div class="h-[320px]">
+                    <canvas id="grafico-plataforma"></canvas>
                 </div>
             </div>
 
-            <!-- Áudio em Aberto (top 5) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 xl:col-span-1">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-lg text-slate-800">Status de Lançamento</h3>
+                    <span class="text-xs text-slate-400">publicado vs não publicado</span>
+                </div>
+                <div class="h-[320px]">
+                    <canvas id="grafico-lancamento"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 xl:col-span-1">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-lg text-slate-800">Pipeline de Produção</h3>
+                    <span class="text-xs text-slate-400">áudio / capa / pronto</span>
+                </div>
+                <div class="h-[320px]">
+                    <canvas id="grafico-pipeline"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Listas executivas -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-lg mb-4 text-slate-800 flex items-center justify-between">
+                    <span>📅 Próximos Lançamentos</span>
+                    <span class="text-sm font-normal text-slate-400">até 7 dias</span>
+                </h3>
+                <div id="lista-proximos" class="space-y-4 text-sm"></div>
+            </div>
+
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <h3 class="font-bold text-lg mb-4 text-slate-800 flex items-center justify-between">
                     <span>🎧 Áudio em Aberto</span>
                     <span class="text-sm font-normal text-slate-400">top 5</span>
                 </h3>
-                <div id="lista-audio-pendente" class="space-y-3">
-                    <!-- preenchido via JS -->
-                </div>
+                <div id="lista-audio-pendente" class="space-y-3"></div>
                 <div class="mt-3 text-right">
                     <a href="gerenciar-projetos.html?filtro=audio_pendente" class="text-sm text-blue-600 hover:underline">Ver todos</a>
                 </div>
             </div>
 
-            <!-- Capas em Aberto (top 5) -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <h3 class="font-bold text-lg mb-4 text-slate-800 flex items-center justify-between">
                     <span>🖼️ Capas em Aberto</span>
                     <span class="text-sm font-normal text-slate-400">top 5</span>
                 </h3>
-                <div id="lista-capa-pendente" class="space-y-3">
-                    <!-- preenchido via JS -->
-                </div>
+                <div id="lista-capa-pendente" class="space-y-3"></div>
                 <div class="mt-3 text-right">
                     <a href="gerenciar-projetos.html?filtro=capa_pendente" class="text-sm text-blue-600 hover:underline">Ver todos</a>
                 </div>
             </div>
 
-            <!-- Projetos Prontos (top 5) -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <h3 class="font-bold text-lg mb-4 text-slate-800 flex items-center justify-between">
-                    <span>✅ Projetos Prontos</span>
-                    <span class="text-sm font-normal text-slate-400">concluídos</span>
+                    <span>✅ Prontos para Lançar</span>
+                    <span class="text-sm font-normal text-slate-400">top 5</span>
                 </h3>
-                <div id="lista-prontos" class="space-y-3">
-                    <!-- preenchido via JS -->
-                </div>
+                <div id="lista-prontos" class="space-y-3"></div>
                 <div class="mt-3 text-right">
                     <a href="gerenciar-projetos.html?filtro=prontos" class="text-sm text-blue-600 hover:underline">Ver todos</a>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 
     <script type="module">

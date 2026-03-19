@@ -525,6 +525,8 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             ${itemInfo('Nome do Projeto', escaparHtml(projeto.nome_projeto || '—'))}
                             ${itemInfo('Título Principal', escaparHtml(projeto.titulo || '—'))}
+                            ${itemInfo('Participação do Projeto', escaparHtml(projeto.feat_projeto || '—'))}
+                            ${itemInfo('Distribuidora', escaparHtml(projeto.distribuidora || '—'))}
                             ${itemInfo('Formato', escaparHtml(projeto.formato || '—'))}
                             ${itemInfo('Gênero / Subgênero', escaparHtml(projeto.genero_subgenero || '—'))}
                             ${itemInfo('Label', escaparHtml(projeto.label || '—'))}
@@ -809,6 +811,8 @@
                         <div class="print-grid-3">
                             ${campo('Nome do Projeto', escapeHtml(projetoAtual.nome_projeto || '—'))}
                             ${campo('Título Principal', escapeHtml(projetoAtual.titulo || '—'))}
+                            ${campo('Participação do Projeto', escapeHtml(projetoAtual.feat_projeto || '—'))}
+                            ${campo('Distribuidora', escapeHtml(projetoAtual.distribuidora || '—'))}
                             ${campo('Formato', escapeHtml(projetoAtual.formato || '—'))}
                             ${campo('Data de Lançamento', formatarData(projetoAtual.data_lancamento))}
                             ${campo('Gênero / Subgênero', escapeHtml(projetoAtual.genero_subgenero || '—'))}
@@ -992,9 +996,12 @@
 
             const linhas = [];
 
+            // Cabeçalho
             linhas.push([
                 'Nome do Projeto',
                 'Título Principal',
+                'Participação do Projeto',
+                'Distribuidora',
                 'Formato',
                 'Data de Lançamento',
                 'Gênero / Subgênero',
@@ -1028,6 +1035,8 @@
                 linhas.push([
                     projetoAtual.nome_projeto || '',
                     projetoAtual.titulo || '',
+                    projetoAtual.feat_projeto || '',
+                    projetoAtual.distribuidora || '',
                     projetoAtual.formato || '',
                     formatarDataCSV(projetoAtual.data_lancamento),
                     projetoAtual.genero_subgenero || '',
@@ -1065,6 +1074,8 @@
                     linhas.push([
                         projetoAtual.nome_projeto || '',
                         projetoAtual.titulo || '',
+                        projetoAtual.feat_projeto || '',
+                        projetoAtual.distribuidora || '',
                         projetoAtual.formato || '',
                         formatarDataCSV(projetoAtual.data_lancamento),
                         projetoAtual.genero_subgenero || '',

@@ -126,7 +126,13 @@ function badgePlataforma(plataforma) {
 
 function formatarData(data) {
     if (!data) return '—';
-    const dt = new Date(data);
+    // Supõe que a string está no formato "YYYY-MM-DD"
+    const partes = data.split('-');
+    if (partes.length !== 3) return '—';
+    const ano = parseInt(partes[0], 10);
+    const mes = parseInt(partes[1], 10) - 1; // meses são 0-index
+    const dia = parseInt(partes[2], 10);
+    const dt = new Date(ano, mes, dia);
     if (isNaN(dt.getTime())) return '—';
     return dt.toLocaleDateString('pt-BR');
 }

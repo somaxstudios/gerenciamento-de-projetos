@@ -222,27 +222,40 @@ function criarFaixa(index) {
         el.setAttribute('name', newName);
     });
 
+    // AQUI ESTÁ A CORREÇÃO DAS DATAS DO ÁUDIO
     faixaDiv.querySelectorAll('.audio-status-select').forEach(select => {
         select.addEventListener('change', function () {
             atualizarDatasAudio(this);
         });
+        // Esta linha força a atualização visual das datas assim que a faixa é criada na tela
+        atualizarDatasAudio(select); 
     });
 
     const removerBtn = faixaDiv.querySelector('.remover-faixa');
-    removerBtn.addEventListener('click', function() {
-        faixaDiv.remove();
-        reindexarFaixas();
-    });
+    if (removerBtn) {
+        removerBtn.addEventListener('click', function() {
+            faixaDiv.remove();
+            reindexarFaixas();
+        });
+    }
 
-    faixaDiv.querySelector('.adicionar-compositor').addEventListener('click', function(e) {
-        const container = faixaDiv.querySelector('.compositores-container');
-        adicionarLinhaParticipante(container, 'compositor', index);
-    });
+    const btnAddCompositor = faixaDiv.querySelector('.adicionar-compositor');
+    if (btnAddCompositor) {
+        btnAddCompositor.addEventListener('click', function(e) {
+            const container = faixaDiv.querySelector('.compositores-container');
+            if (container) adicionarLinhaParticipante(container, 'compositor', index);
+        });
+    }
 
-    faixaDiv.querySelector('.adicionar-interprete').addEventListener('click', function(e) {
-        const container = faixaDiv.querySelector('.interpretes-container');
-        adicionarLinhaParticipante(container, 'interprete', index);
-    });
+    const btnAddInterprete = faixaDiv.querySelector('.adicionar-interprete');
+    if (btnAddInterprete) {
+        btnAddInterprete.addEventListener('click', function(e) {
+            const container = faixaDiv.querySelector('.interpretes-container');
+            if (container) adicionarLinhaParticipante(container, 'interprete', index);
+        });
+    } else {
+        console.warn('Aviso: Botão com a classe ".adicionar-interprete" não encontrado no template HTML.');
+    }
 
     faixaDiv.querySelectorAll('.remover-compositor, .remover-interprete').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -445,7 +458,6 @@ document.getElementById('form-lancamento').addEventListener('submit', async func
             audio_status,
             audio_data_inicio,
             audio_data_conclusao,
-            // NOVO: definir ja_lancado com base no status_geral
             ja_lancado: statusGeralVal === 'CONCLUIDO' ? true : false
         };
 
@@ -497,16 +509,22 @@ document.getElementById('form-lancamento').addEventListener('submit', async func
                 const nomeCompleto = row.querySelector('input[name^="compositor_completo"]')?.value;
                 const cpf = row.querySelector('input[name^="compositor_cpf"]')?.value;
 
-                if (!nomeCompleto && !cpf) continue;
+                if (!nomeCompleto && !nomeArtistico && !cpf) continue;
 
-                const pessoaId = await obterOuCriarPessoa({ nome_completo: nomeCompleto, nome_artistico: nomeArtistico, cpf: cpf });
+                const pessoaId = await obterOuCriarPessoa({ 
+                    nome_completo: nomeCompleto || nomeArtistico, 
+                    nome_artistico: nomeArtistico, 
+                    cpf: cpf 
+                });
 
-                await supabase.from('projeto_participantes').insert({
+                const { error: erroPart } = await supabase.from('projeto_participantes').insert({
                     projeto_id: projetoId,
                     faixa_id: faixaId,
                     pessoa_id: pessoaId,
                     papel: 'AUTOR',
                 });
+
+                if (erroPart) throw new Error(`Erro no banco ao salvar AUTOR: ${erroPart.message}`);
             }
 
             // Intérpretes
@@ -516,16 +534,22 @@ document.getElementById('form-lancamento').addEventListener('submit', async func
                 const nomeCompleto = row.querySelector('input[name^="interprete_completo"]')?.value;
                 const cpf = row.querySelector('input[name^="interprete_cpf"]')?.value;
 
-                if (!nomeCompleto && !cpf) continue;
+                if (!nomeCompleto && !nomeArtistico && !cpf) continue;
 
-                const pessoaId = await obterOuCriarPessoa({ nome_completo: nomeCompleto, nome_artistico: nomeArtistico, cpf: cpf });
+                const pessoaId = await obterOuCriarPessoa({ 
+                    nome_completo: nomeCompleto || nomeArtistico, 
+                    nome_artistico: nomeArtistico, 
+                    cpf: cpf 
+                });
 
-                await supabase.from('projeto_participantes').insert({
+                const { error: erroInt } = await supabase.from('projeto_participantes').insert({
                     projeto_id: projetoId,
                     faixa_id: faixaId,
                     pessoa_id: pessoaId,
                     papel: 'INTERPRETE',
                 });
+                
+                if (erroInt) throw new Error(`Erro no banco ao salvar INTERPRETE: ${erroInt.message}`);
             }
         }
 
@@ -536,16 +560,22 @@ document.getElementById('form-lancamento').addEventListener('submit', async func
             const nomeCompleto = row.querySelector('input[name="produtor_completo[]"]')?.value;
             const cpf = row.querySelector('input[name="produtor_cpf[]"]')?.value;
 
-            if (!nomeCompleto && !cpf) continue;
+            if (!nomeCompleto && !nomeArtistico && !cpf) continue;
 
-            const pessoaId = await obterOuCriarPessoa({ nome_completo: nomeCompleto, nome_artistico: nomeArtistico, cpf: cpf });
+            const pessoaId = await obterOuCriarPessoa({ 
+                nome_completo: nomeCompleto || nomeArtistico, 
+                nome_artistico: nomeArtistico, 
+                cpf: cpf 
+            });
 
-            await supabase.from('projeto_participantes').insert({
+            const { error: erroProd } = await supabase.from('projeto_participantes').insert({
                 projeto_id: projetoId,
                 faixa_id: null,
                 pessoa_id: pessoaId,
                 papel: 'PRODUTOR_MUSICAL',
             });
+            
+            if (erroProd) throw new Error(`Erro no banco ao salvar PRODUTOR: ${erroProd.message}`);
         }
 
         // Músicos
@@ -556,17 +586,23 @@ document.getElementById('form-lancamento').addEventListener('submit', async func
             const cpf = row.querySelector('input[name="musico_cpf[]"]')?.value;
             const instrumento = row.querySelector('input[name="musico_instrumento[]"]')?.value;
 
-            if (!nomeCompleto && !cpf) continue;
+            if (!nomeCompleto && !nomeArtistico && !cpf) continue;
 
-            const pessoaId = await obterOuCriarPessoa({ nome_completo: nomeCompleto, nome_artistico: nomeArtistico, cpf: cpf });
+            const pessoaId = await obterOuCriarPessoa({ 
+                nome_completo: nomeCompleto || nomeArtistico, 
+                nome_artistico: nomeArtistico, 
+                cpf: cpf 
+            });
 
-            await supabase.from('projeto_participantes').insert({
+            const { error: erroMus } = await supabase.from('projeto_participantes').insert({
                 projeto_id: projetoId,
                 faixa_id: null,
                 pessoa_id: pessoaId,
                 papel: 'MUSICO',
                 instrumento: instrumento || null
             });
+            
+            if (erroMus) throw new Error(`Erro no banco ao salvar MUSICO: ${erroMus.message}`);
         }
 
         alert('Projeto salvo com sucesso!');
@@ -574,7 +610,7 @@ document.getElementById('form-lancamento').addEventListener('submit', async func
 
     } catch (error) {
         console.error('Erro ao salvar:', error);
-        alert('Erro ao salvar o projeto: ' + error.message);
+        alert('Erro ao salvar o projeto: \n\n' + error.message);
         btnSalvar.innerText = 'Salvar Projeto';
         btnSalvar.disabled = false;
     }

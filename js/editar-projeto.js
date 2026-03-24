@@ -274,9 +274,12 @@ function gerarFaixas(quantidade, dadosFaixas = null) {
 
 // Função para popular compositores/interpretes de uma faixa (com verificação)
 function popularParticipantesFaixa(faixaDiv, participantes, faixaId, tipo) {
-    const container = faixaDiv.querySelector(`.${tipo}s-container`);
+    // Define a classe correta lidando com o plural em português
+    const classeContainer = tipo === 'compositor' ? '.compositores-container' : '.interpretes-container';
+    const container = faixaDiv.querySelector(classeContainer);
+    
     if (!container) {
-        console.warn(`Container .${tipo}s-container não encontrado na faixa`, faixaDiv);
+        console.warn(`Container ${classeContainer} não encontrado na faixa`, faixaDiv);
         return;
     }
     container.innerHTML = ''; // limpa
@@ -663,21 +666,40 @@ document.getElementById('form-lancamento').addEventListener('submit', async func
 
             // Compositores
             const compositoresRows = faixa.querySelectorAll('.compositores-container .grid');
+            console.log(`Faixa ${i+1}: ${compositoresRows.length} compositor(es) encontrados.`);
+
             for (let row of compositoresRows) {
                 const nomeArtistico = row.querySelector('input[name^="compositor_artistico"]')?.value;
                 const nomeCompleto = row.querySelector('input[name^="compositor_completo"]')?.value;
                 const cpf = row.querySelector('input[name^="compositor_cpf"]')?.value;
 
-                if (!nomeCompleto && !cpf) continue;
+                console.log(`  Compositor:`, { nomeArtistico, nomeCompleto, cpf });
+
+                if (!nomeCompleto && !cpf) {
+                    console.warn('  Compositor ignorado: sem nome completo e sem CPF');
+                    continue;
+                }
 
                 const pessoaId = await obterOuCriarPessoa({ nome_completo: nomeCompleto, nome_artistico: nomeArtistico, cpf: cpf });
+                console.log(`  Pessoa ID obtido: ${pessoaId}`);
 
-                await supabase.from('projeto_participantes').insert({
+                if (!pessoaId) {
+                    console.error('  ERRO: pessoaId nulo!');
+                    continue;
+                }
+
+                const { error: erroPart } = await supabase.from('projeto_participantes').insert({
                     projeto_id: projetoId,
                     faixa_id: faixaId,
                     pessoa_id: pessoaId,
                     papel: 'AUTOR',
                 });
+
+                if (erroPart) {
+                    console.error('  ERRO ao inserir compositor:', erroPart);
+                } else {
+                    console.log('  Compositor inserido com sucesso');
+                }
             }
 
             // Intérpretes

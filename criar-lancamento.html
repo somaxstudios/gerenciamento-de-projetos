@@ -12,7 +12,6 @@
 </head>
 <body class="bg-gray-100 flex h-screen text-gray-800">
 
-    <!-- Sidebar será carregada via JavaScript -->
     <div id="sidebar-container"></div>
 
     <main class="flex-1 overflow-y-auto p-8">
@@ -22,35 +21,30 @@
 
             <form id="form-lancamento" class="space-y-8">
                 
-                <!-- ========== SEÇÃO 1: INFORMAÇÕES GERAIS ========== -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
                         <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">1</span>
                         Informações Gerais
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Nome do Projeto (ocupa todas as colunas) -->
                         <div class="col-span-1 md:col-span-2 lg:col-span-3">
                             <label class="block text-sm font-semibold mb-1">Nome do Projeto (Título Principal) <span class="text-red-500">*</span></label>
                             <input type="text" id="nome_projeto" required 
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         </div>
 
-                        <!-- Artista principal -->
                         <div class="col-span-1">
                             <label class="block text-sm font-semibold mb-1">Artista principal</label>
                             <input type="text" id="titulo_principal" placeholder="Nome do artista principal"
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- Participação do projeto (feat. geral) -->
                         <div class="col-span-1">
                             <label class="block text-sm font-semibold mb-1">Participação do projeto</label>
                             <input type="text" id="feat_projeto" placeholder="Ex: feat. Maria"
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- Formato -->
                         <div class="col-span-1">
                             <label class="block text-sm font-semibold mb-1">Formato <span class="text-red-500">*</span></label>
                             <select id="formato" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
@@ -60,35 +54,30 @@
                             </select>
                         </div>
 
-                        <!-- Data de Lançamento -->
                         <div class="col-span-1">
                             <label class="block text-sm font-semibold mb-1">Data de Lançamento</label>
                             <input type="date" id="data_lancamento" 
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- Gênero -->
                         <div class="col-span-1">
                             <label class="block text-sm font-semibold mb-1">Gênero</label>
                             <input type="text" id="genero" placeholder="ex: Gospel" 
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- Subgênero -->
                         <div class="col-span-1">
                             <label class="block text-sm font-semibold mb-1">Subgênero</label>
                             <input type="text" id="subgenero" placeholder="ex: R&B" 
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- Label -->
                         <div class="col-span-1">
                             <label class="block text-sm font-semibold mb-1">Label</label>
                             <input type="text" id="label" 
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- Status do Projeto -->
                         <div class="col-span-1">
                             <label class="block text-sm font-semibold mb-1">Status do Projeto</label>
                             <select id="status_geral" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
@@ -98,21 +87,18 @@
                             </select>
                         </div>
 
-                        <!-- Datas condicionais do status (início) -->
                         <div id="status-geral-data-inicio" class="col-span-1 hidden">
                             <label class="block text-sm font-semibold mb-1">Iniciado em</label>
                             <input type="date" id="status_geral_data_inicio"
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- Datas condicionais do status (conclusão) -->
                         <div id="status-geral-data-conclusao" class="col-span-1 hidden">
                             <label class="block text-sm font-semibold mb-1">Concluído em</label>
                             <input type="date" id="status_geral_data_conclusao"
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- NOVO: Distribuidora (aparece apenas quando status = CONCLUIDO) -->
                         <div id="status-geral-distribuidora" class="col-span-1 hidden">
                             <label class="block text-sm font-semibold mb-1">Distribuidora</label>
                             <select id="distribuidora" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
@@ -121,12 +107,10 @@
                                 <option value="Believe">Believe</option>
                                 <option value="Outra">Outra</option>
                             </select>
-                            <!-- Campo texto para "Outra" (opcional) -->
                             <input type="text" id="distribuidora_outra" placeholder="Qual?"
                                    class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 hidden">
                         </div>
 
-                        <!-- Prioridade -->
                         <div class="col-span-1 flex items-center">
                             <label class="flex items-center gap-2 text-sm font-semibold">
                                 <input type="checkbox" id="is_prioridade" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
@@ -136,14 +120,12 @@
                     </div>
                 </div>
 
-                <!-- ========== SEÇÃO 2: FAIXAS (COM TEMPLATE) ========== -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
                         <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">2</span>
                         Faixas
                     </h2>
                     
-                    <!-- Controle para EP/Álbum -->
                     <div id="config-faixas" class="mb-6 hidden">
                         <label class="block text-sm font-semibold mb-2">Número de faixas</label>
                         <input type="number" id="num-faixas" min="1" value="2" 
@@ -153,13 +135,10 @@
                         </button>
                     </div>
 
-                    <!-- Container para as faixas -->
                     <div id="faixas-container" class="space-y-6">
-                        <!-- As faixas serão inseridas dinamicamente via JavaScript -->
-                    </div>
+                        </div>
                 </div>
 
-                <!-- TEMPLATE PARA FAIXA (oculto) -->
                 <template id="faixa-template">
                     <div class="faixa-item border border-gray-200 rounded-lg p-4 bg-gray-50" data-index="">
                         <div class="flex justify-between items-center mb-3">
@@ -189,7 +168,6 @@
                             </div>
                         </div>
 
-                        <!-- Compositores -->
                         <div class="mt-4">
                             <label class="block text-sm font-semibold mb-2">Compositores</label>
                             <div class="compositores-container space-y-2">
@@ -203,7 +181,6 @@
                             <button type="button" class="adicionar-compositor mt-2 text-sm text-blue-600 hover:text-blue-800">+ Adicionar compositor</button>
                         </div>
 
-                        <!-- Intérpretes -->
                         <div class="mt-4">
                             <label class="block text-sm font-semibold mb-2">Intérpretes</label>
                             <div class="interpretes-container space-y-2">
@@ -217,7 +194,6 @@
                             <button type="button" class="adicionar-interprete mt-2 text-sm text-blue-600 hover:text-blue-800">+ Adicionar intérprete</button>
                         </div>
 
-                        <!-- Status do Áudio -->
                         <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-medium mb-1">Status do Áudio</label>
@@ -239,14 +215,12 @@
                     </div>
                 </template>
 
-                <!-- ========== SEÇÃO 3: PRODUÇÃO MUSICAL E MÚSICOS ========== -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
                         <span class="w-8 h-8 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-sm">3</span>
                         Produção Musical (geral)
                     </h2>
                     
-                    <!-- Produtores -->
                     <div class="mb-6">
                         <label class="block text-sm font-semibold mb-2">Produtores</label>
                         <div id="produtores-container" class="space-y-2">
@@ -260,7 +234,6 @@
                         <button type="button" id="adicionar-produtor" class="mt-2 text-sm text-blue-600 hover:text-blue-800">+ Adicionar produtor</button>
                     </div>
 
-                    <!-- Músicos -->
                     <div>
                         <label class="block text-sm font-semibold mb-2">Músicos</label>
                         <div id="musicos-container" class="space-y-2">
@@ -276,7 +249,6 @@
                     </div>
                 </div>
 
-                <!-- ========== SEÇÃO 4: CAPA ========== -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
                         <span class="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm">4</span>
@@ -302,7 +274,6 @@
                     </div>
                 </div>
 
-                <!-- ========== SEÇÃO 5: LINKS ========== -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
                         <span class="w-8 h-8 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-sm">5</span>
@@ -332,7 +303,6 @@
                     </div>
                 </div>
 
-                <!-- Botões -->
                 <div class="flex justify-end gap-4">
                     <button type="button" onclick="window.location.href='gerenciar-projetos.html'" 
                             class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
@@ -347,13 +317,11 @@
         </div>
     </main>
 
-    <!-- Carregar a sidebar -->
     <script type="module">
         import { carregarSidebar } from './js/sidebar.js';
         carregarSidebar();
     </script>
 
-    <!-- Script principal com toda a lógica (agora importa do arquivo externo) -->
     <script type="module" src="./js/criar-lancamento.js"></script>
 </body>
 </html>

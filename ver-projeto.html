@@ -454,6 +454,9 @@
                     .join(', ')
                 : '—';
 
+            // Captura a URL do Drive (coluna url_drive)
+            const driveUrl = projeto.url_drive || projeto.url || null;
+
             const html = `
                 <section class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl shadow-soft overflow-hidden">
                     <div class="px-8 py-8 lg:px-10 lg:py-10">
@@ -669,6 +672,12 @@
                                     ? `<a href="${escaparHtml(projeto.backup_url)}" target="_blank" rel="noopener noreferrer" class="text-sm text-brand-700 hover:text-brand-800 break-all font-medium">${escaparHtml(projeto.backup_url)}</a>`
                                     : `<p class="text-sm text-slate-700">—</p>`}
                             </div>
+                            <div>
+                                <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-1">URL do Drive</p>
+                                ${driveUrl
+                                    ? `<a href="${escaparHtml(driveUrl)}" target="_blank" rel="noopener noreferrer" class="text-sm text-brand-700 hover:text-brand-800 break-all font-medium">${escaparHtml(driveUrl)}</a>`
+                                    : `<p class="text-sm text-slate-700">—</p>`}
+                            </div>
                         </div>
                     </div>
 
@@ -796,6 +805,8 @@
                 </div>
             `;
 
+            const driveUrl = projetoAtual.url_drive || projetoAtual.url || null;
+
             const html = `
                 <div class="print-doc">
                     <div class="print-header">
@@ -897,6 +908,7 @@
                         <div class="print-section-title">Observações e Referências</div>
                         <div class="print-grid-2">
                             ${campo('Backup URL', escapeHtml(projetoAtual.backup_url || '—'))}
+                            ${campo('URL do Drive', escapeHtml(driveUrl || '—'))}
                             ${campo('Release', escapeHtml(projetoAtual.release_texto || '—'))}
                         </div>
                         <div style="margin-top: 8px;">
@@ -994,6 +1006,8 @@
                 }
             });
 
+            const driveUrl = projetoAtual.url_drive || projetoAtual.url || '';
+
             const linhas = [];
 
             // Cabeçalho
@@ -1016,6 +1030,7 @@
                 'Spotify ID',
                 'Apple Music ID',
                 'Backup URL',
+                'URL do Drive',
                 'Produtores',
                 'Músicos',
                 'Número da Faixa',
@@ -1051,6 +1066,7 @@
                     projetoAtual.spotify_id || '',
                     projetoAtual.apple_music_id || '',
                     projetoAtual.backup_url || '',
+                    driveUrl,
                     participantesGlobais.produtores.join(', '),
                     participantesGlobais.musicos.join(', '),
                     '',
@@ -1090,6 +1106,7 @@
                         projetoAtual.spotify_id || '',
                         projetoAtual.apple_music_id || '',
                         projetoAtual.backup_url || '',
+                        driveUrl,
                         participantesGlobais.produtores.join(', '),
                         participantesGlobais.musicos.join(', '),
                         faixa.numero_faixa || '',

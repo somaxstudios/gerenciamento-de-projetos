@@ -106,10 +106,10 @@
                 margin-top: 3px;
             }
 
+            /* Ajuste solicitado: .print-section não quebra a página internamente */
             .print-section {
                 margin-top: 14px;
-                break-inside: avoid;
-                page-break-inside: avoid;
+                /* break-inside: avoid; removido para permitir que a seção de faixas seja dividida entre páginas */
             }
 
             .print-section-title {
@@ -153,6 +153,7 @@
                 word-break: break-word;
             }
 
+            /* Mantido para que uma faixa não seja cortada */
             .print-faixa {
                 border: 1px solid #cbd5e1;
                 padding: 10px;
@@ -834,23 +835,7 @@
                         </div>
                     </section>
 
-                    <section class="print-section">
-                        <div class="print-section-title">Andamento de Produção</div>
-                        <div class="print-grid-2">
-                            <div>
-                                ${campo('Status do Projeto', statusTexto(projetoAtual.status_geral))}
-                                ${campo('Início do Projeto', formatarData(projetoAtual.status_geral_data_inicio))}
-                                ${campo('Conclusão do Projeto', formatarData(projetoAtual.status_geral_data_conclusao))}
-                                ${campo('Resumo do Projeto', resumoStatus(projetoAtual.status_geral, projetoAtual.status_geral_data_inicio, projetoAtual.status_geral_data_conclusao))}
-                            </div>
-                            <div>
-                                ${campo('Status da Capa', statusTexto(projetoAtual.capa_status))}
-                                ${campo('Início da Capa', formatarData(projetoAtual.capa_data_inicio))}
-                                ${campo('Conclusão da Capa', formatarData(projetoAtual.capa_data_conclusao))}
-                                ${campo('Resumo da Capa', resumoStatus(projetoAtual.capa_status, projetoAtual.capa_data_inicio, projetoAtual.capa_data_conclusao))}
-                            </div>
-                        </div>
-                    </section>
+                    <!-- Seção "Andamento de Produção" removida conforme solicitado -->
 
                     <section class="print-section">
                         <div class="print-section-title">Produção Musical</div>
@@ -1069,6 +1054,7 @@
                     driveUrl,
                     participantesGlobais.produtores.join(', '),
                     participantesGlobais.musicos.join(', '),
+                    '',
                     '',
                     '',
                     '',

@@ -1,0 +1,9 @@
+{
+  "name": "Poly Play",
+  "short_name": "Poly Play",
+  "start_url": "./poly-play.html",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#111827",
+  "icons": [{ "src": "static/image/logo.png", "sizes": "150x150", "type": "image/png" }]
+}

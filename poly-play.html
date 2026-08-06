@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="Poly Play: uma programação musical do catálogo PolyMusic com YouTube.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="poly-play.webmanifest">
+  <title>Poly Play — Playlist contínua</title>
+
+  <!-- Tailwind (opcional, mas compatível) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/css/poly-play.css">
+</head>
+<body data-page="polyplay">
+
+  <!-- ==================== MAIN ==================== -->
+  <main class="pt-16 md:pt-20 min-h-screen page-fade radio-page">
+    <section class="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-16">
+      <div class="w-full max-w-3xl text-center">
+
+        <!-- Badge -->
+        <span class="glory-play-badge inline-flex items-center gap-2 text-gold-light text-xs uppercase tracking-[0.25em] border border-gold/30 px-4 py-2 rounded-full mb-6">
+          <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+          Playlist contínua
+        </span>
+
+        <!-- Título -->
+        <h1 class="text-4xl md:text-7xl font-display font-bold text-white mb-5">
+          Poly <span class="gradient-gold">Play</span>
+        </h1>
+
+        <p class="glory-play-intro text-gray-400 max-w-xl mx-auto mb-10">
+          Aperte o play e curta uma seleção contínua do catálogo PolyMusic.
+        </p>
+
+        <!-- Player central -->
+        <div class="relative mx-auto w-64 h-64 md:w-80 md:h-80 rounded-full border border-gold/20 bg-black/40 shadow-gold flex items-center justify-center overflow-hidden">
+          <div class="absolute inset-8 rounded-full border border-white/10"></div>
+          <div class="absolute inset-16 rounded-full border border-gold/20"></div>
+
+          <!-- Botão play/pause -->
+          <button id="playButton" class="relative z-10 w-24 h-24 rounded-full bg-gold text-black hover:scale-105 transition shadow-xl" aria-label="Iniciar Poly Play">
+            <i class="fas fa-play text-3xl ml-1"></i>
+          </button>
+
+          <!-- Player oculto (YouTube) -->
+          <div id="hidden-player">
+            <div id="player"></div>
+          </div>
+        </div>
+
+        <!-- Informações da faixa -->
+        <div class="mt-10">
+          <p class="text-xs uppercase tracking-[0.25em] text-gray-500 mb-2">Agora tocando</p>
+          <h2 id="track-title" class="text-xl md:text-2xl font-semibold text-white">
+            Poly Play pronto para começar
+          </h2>
+          <p id="track-artist" class="text-sm text-gold-light mt-2">
+            Clique no play
+          </p>
+        </div>
+
+        <!-- Botões auxiliares -->
+        <div class="mt-10 flex items-center justify-center gap-4 flex-wrap">
+          <button id="nextButton" class="text-white/70 hover:text-gold transition px-4 py-2 rounded-full border border-white/10">
+            <i class="fas fa-random mr-2"></i> Outra aleatória
+          </button>
+          <button id="volumeButton" class="text-white/70 hover:text-gold transition px-4 py-2 rounded-full border border-white/10">
+            <i class="fas fa-volume-up mr-2"></i> Som
+          </button>
+          <a id="youtubeLink" class="text-white/70 hover:text-gold transition px-4 py-2 rounded-full border border-white/10" href="#" target="_blank" rel="noopener">
+            <i class="fab fa-youtube mr-2"></i> YouTube
+          </a>
+        </div>
+
+        <!-- Status -->
+        <p id="playerStatus" class="text-gray-500 text-sm mt-8">
+          Aguardando o início da playlist...
+        </p>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="assets/js/poly-play.js"></script>
+</body>
+</html>
